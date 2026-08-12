@@ -31,7 +31,7 @@ Original Office files under `Document/` are retained unchanged as references and
 - [x] 02 — Functional Requirements Specification (FRS)
 - [x] 03 — Non-Functional Requirements (NFR)
 - [x] 04 — Use Case Specification
-- [ ] 05 — User Stories
+- [x] 05 — User Stories
 - [ ] 06 — Acceptance Criteria
 - [ ] 07 — UML
 - [ ] 08 — ERD
@@ -41,15 +41,15 @@ Original Office files under `Document/` are retained unchanged as references and
 - [ ] 12 — Requirements Traceability Matrix
 - [ ] 13 — Final Cross-document Consistency Review
 
-**Completed:** 4 of 13 Phase 1 items.
+**Completed:** 5 of 13 Phase 1 items.
 
 ## 4. Current Status
 
 | Field | Status |
 |---|---|
 | Phase | Phase 1 — Business Analysis & System Design |
-| Current Focus | User Stories |
-| Next Task | User Stories |
+| Current Focus | Acceptance Criteria |
+| Next Task | Acceptance Criteria |
 | Application Development | Not started |
 | Phase 2 UI/UX | Not started |
 | Backend Development | Not started |
@@ -65,7 +65,7 @@ Original Office files under `Document/` are retained unchanged as references and
 | 2 | `02-frs.md` | Present; complete and validated |
 | 3 | `03-nfr.md` | Present; complete and validated |
 | 4 | `04-use-case-specification.md` | Present; complete and validated |
-| 5 | `05-user-stories.md` | Not created |
+| 5 | `05-user-stories.md` | Present; complete and validated |
 | 6 | `06-acceptance-criteria.md` | Not created |
 | 7 | `07-uml.md` | Not created |
 | 8 | `08-erd.md` | Not created |
@@ -220,5 +220,5 @@ Do not modify application source code, generate production code, alter Office re
 |---|---|
 | Last Updated | 2026-08-12 |
 | Updated By | Project Team |
-| Current Milestone | Use Case Specification complete; begin User Stories |
-| Current Focus | User Stories (`05-user-stories.md`) |
+| Current Milestone | User Stories complete; begin Acceptance Criteria |
+| Current Focus | Acceptance Criteria (`06-acceptance-criteria.md`) |
