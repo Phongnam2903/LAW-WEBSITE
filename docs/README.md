@@ -29,7 +29,7 @@ Original Office files under `Document/` are retained unchanged as references and
 
 - [x] 01 — Business Requirements Document (BRD)
 - [x] 02 — Functional Requirements Specification (FRS)
-- [ ] 03 — Non-Functional Requirements (NFR)
+- [x] 03 — Non-Functional Requirements (NFR)
 - [ ] 04 — Use Case Specification
 - [ ] 05 — User Stories
 - [ ] 06 — Acceptance Criteria
@@ -41,15 +41,15 @@ Original Office files under `Document/` are retained unchanged as references and
 - [ ] 12 — Requirements Traceability Matrix
 - [ ] 13 — Final Cross-document Consistency Review
 
-**Completed:** 2 of 13 Phase 1 items.
+**Completed:** 3 of 13 Phase 1 items.
 
 ## 4. Current Status
 
 | Field | Status |
 |---|---|
 | Phase | Phase 1 — Business Analysis & System Design |
-| Current Focus | Non-Functional Requirements |
-| Next Task | Create and validate `03-nfr.md` from the BRD and FRS |
+| Current Focus | Use Case Specification |
+| Next Task | Create and validate `04-use-case-specification.md` from the BRD, FRS, and NFR |
 | Application Development | Not started |
 | Phase 2 UI/UX | Not started |
 | Backend Development | Not started |
@@ -63,7 +63,7 @@ Original Office files under `Document/` are retained unchanged as references and
 | — | `README.md` | Present; authoritative progress tracker |
 | 1 | `01-brd.md` | Present; complete and validated |
 | 2 | `02-frs.md` | Present; complete and validated |
-| 3 | `03-nfr.md` | Not created |
+| 3 | `03-nfr.md` | Present; complete and validated |
 | 4 | `04-use-case-specification.md` | Not created |
 | 5 | `05-user-stories.md` | Not created |
 | 6 | `06-acceptance-criteria.md` | Not created |
@@ -117,6 +117,7 @@ Do not design a downstream artifact from an undocumented assumption.
 | Business scope and terminology | [01-brd.md](01-brd.md) |
 | Assumptions and unresolved decisions | [assumptions-open-questions.md](assumptions-open-questions.md) |
 | Detailed functional behavior | [02-frs.md](02-frs.md) |
+| Non-functional quality constraints | [03-nfr.md](03-nfr.md) |
 | Data model | `08-erd.md` and `09-database-dictionary.md` when completed |
 | API contract | `10-openapi.yaml` when completed |
 | Architecture | `11-system-design-document.md` when completed |
@@ -219,5 +220,5 @@ Do not modify application source code, generate production code, alter Office re
 |---|---|
 | Last Updated | 2026-08-12 |
 | Updated By | Project Team |
-| Current Milestone | FRS baseline complete; begin non-functional analysis |
-| Current Focus | Non-Functional Requirements (`03-nfr.md`) |
+| Current Milestone | NFR baseline complete; begin Use Case analysis |
+| Current Focus | Use Case Specification (`04-use-case-specification.md`) |

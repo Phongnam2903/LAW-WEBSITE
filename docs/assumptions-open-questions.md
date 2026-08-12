@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Project | Law Firm Website & Management System |
-| Register version | 1.0 |
+| Register version | 1.1 |
 | Status | Active |
 | Last updated | 2026-08-12 |
 | Business authority | [01-brd.md](01-brd.md) |
@@ -52,6 +52,16 @@ All questions currently have status **Open**. Priority indicates sequencing impa
 | `OQ-23` | High | What internal-account lifecycle, credential recovery, token/session, lockout, and any additional authentication policy are required? | `FE-02`, `FE-03`, `SEC-03` | Authentication and User Management FRS and NFR |
 | `OQ-24` | High | Does a Guest request a specific appointment, or does authorized staff create an appointment after consultation intake, and what information connects the Lead and Appointment? | `FE-01`, `FE-06` | Appointment and Lead FRS |
 | `OQ-25` | Medium | Which languages and localization rules apply to the public website and internal workspace? | Public experience, `AS-04` | Content FRS and UI acceptance criteria |
+| `OQ-26` | High | What production workload profile and measurable performance/capacity targets apply, including page and API latency percentiles, throughput, concurrent users, file-upload timing, WebSocket delivery latency, data volume, and expected growth? | Performance and scalability across `FE-01`–`FE-13` | NFR acceptance thresholds and capacity design |
+| `OQ-27` | High | Which accessibility standard, conformance level, assistive technologies, and exception process must the public website and internal workspace support? | Public experience and all user interfaces | Accessibility NFR acceptance thresholds |
+| `OQ-28` | High | Which browser, browser-version, operating-system, device, and viewport matrix must be supported? | Mobile-first public experience and internal workspace | Responsive-design and compatibility acceptance thresholds |
+| `OQ-29` | High | Which security engineering baseline applies, including approved cryptography, security headers, vulnerability severity/remediation thresholds, security-testing cadence, secret handling, file-malware controls, and presigned-URL lifetime? | `SEC-01`–`SEC-06`, `FE-02`, `FE-08` | Security, file-security, configuration, and deployment NFRs |
+| `OQ-30` | High | Which logging, monitoring, and observability events, redaction rules, metrics, traces, retention periods, alert thresholds, notification routes, and incident-severity definitions are required? | Operations, security, privacy, and support | Logging, monitoring, and observability NFRs |
+| `OQ-31` | Medium | Which maintainability and test quality gates are required, including automated coverage, static analysis, defect tolerance, review, and release-pass thresholds? | Engineering quality across all modules | Maintainability and testability NFR acceptance thresholds |
+| `OQ-32` | Medium | Which API quality policy is required for versioning, compatibility, validation, pagination, idempotency, error representation, and deprecation? | REST API integration across functional modules | API-quality NFR acceptance thresholds and OpenAPI design |
+| `OQ-33` | High | Which deployment environments, hosting boundaries, regions, release approvals, smoke tests, rollback expectations, configuration ownership, and change-control rules apply? | Approved target stack and deployment | Deployment and configuration-management NFRs and SDD |
+| `OQ-34` | Medium | What measurable usability targets apply, including task-success rate, task time, user-error rate, training expectations, and satisfaction measure for each user group? | Public and internal user experience | Usability NFR acceptance thresholds |
+| `OQ-35` | Medium | What technical SEO success targets apply, including crawl/index behavior, sitemap and robots policy, Core Web Vitals thresholds, and measurement tooling? | `FE-10`, `WEB-01`–`WEB-05`, `BO-01` | SEO and public-performance NFR acceptance thresholds |
 
 ## 3. Clarified Scope Boundaries
 
@@ -72,4 +82,3 @@ When an answer is approved:
 2. update [01-brd.md](01-brd.md) if the decision changes the business baseline;
 3. update every affected downstream document and traceability link; and
 4. retain the question ID so historical references remain stable.
-
