@@ -30,7 +30,7 @@ Original Office files under `Document/` are retained unchanged as references and
 - [x] 01 — Business Requirements Document (BRD)
 - [x] 02 — Functional Requirements Specification (FRS)
 - [x] 03 — Non-Functional Requirements (NFR)
-- [ ] 04 — Use Case Specification
+- [x] 04 — Use Case Specification
 - [ ] 05 — User Stories
 - [ ] 06 — Acceptance Criteria
 - [ ] 07 — UML
@@ -41,15 +41,15 @@ Original Office files under `Document/` are retained unchanged as references and
 - [ ] 12 — Requirements Traceability Matrix
 - [ ] 13 — Final Cross-document Consistency Review
 
-**Completed:** 3 of 13 Phase 1 items.
+**Completed:** 4 of 13 Phase 1 items.
 
 ## 4. Current Status
 
 | Field | Status |
 |---|---|
 | Phase | Phase 1 — Business Analysis & System Design |
-| Current Focus | Use Case Specification |
-| Next Task | Create and validate `04-use-case-specification.md` from the BRD, FRS, and NFR |
+| Current Focus | User Stories |
+| Next Task | User Stories |
 | Application Development | Not started |
 | Phase 2 UI/UX | Not started |
 | Backend Development | Not started |
@@ -64,7 +64,7 @@ Original Office files under `Document/` are retained unchanged as references and
 | 1 | `01-brd.md` | Present; complete and validated |
 | 2 | `02-frs.md` | Present; complete and validated |
 | 3 | `03-nfr.md` | Present; complete and validated |
-| 4 | `04-use-case-specification.md` | Not created |
+| 4 | `04-use-case-specification.md` | Present; complete and validated |
 | 5 | `05-user-stories.md` | Not created |
 | 6 | `06-acceptance-criteria.md` | Not created |
 | 7 | `07-uml.md` | Not created |
@@ -220,5 +220,5 @@ Do not modify application source code, generate production code, alter Office re
 |---|---|
 | Last Updated | 2026-08-12 |
 | Updated By | Project Team |
-| Current Milestone | NFR baseline complete; begin Use Case analysis |
-| Current Focus | Use Case Specification (`04-use-case-specification.md`) |
+| Current Milestone | Use Case Specification complete; begin User Stories |
+| Current Focus | User Stories (`05-user-stories.md`) |
