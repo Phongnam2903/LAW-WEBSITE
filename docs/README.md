@@ -32,24 +32,24 @@ Original Office files under `Document/` are retained unchanged as references and
 - [x] 03 — Non-Functional Requirements (NFR)
 - [x] 04 — Use Case Specification
 - [x] 05 — User Stories
-- [ ] 06 — Acceptance Criteria
-- [ ] 07 — UML
-- [ ] 08 — ERD
-- [ ] 09 — Database Dictionary
-- [ ] 10 — OpenAPI Specification
-- [ ] 11 — System Design Document (SDD)
-- [ ] 12 — Requirements Traceability Matrix
-- [ ] 13 — Final Cross-document Consistency Review
+- [x] 06 — Acceptance Criteria
+- [x] 07 — UML
+- [x] 08 — ERD
+- [x] 09 — Database Dictionary
+- [x] 10 — OpenAPI Specification
+- [x] 11 — System Design Document (SDD)
+- [x] 12 — Requirements Traceability Matrix
+- [x] 13 — Final Cross-document Consistency Review
 
-**Completed:** 5 of 13 Phase 1 items.
+**Completed:** 13 of 13 Phase 1 items.
 
 ## 4. Current Status
 
 | Field | Status |
 |---|---|
 | Phase | Phase 1 — Business Analysis & System Design |
-| Current Focus | Acceptance Criteria |
-| Next Task | Acceptance Criteria |
+| Current Focus | Phase 1 Complete |
+| Next Task | TBD |
 | Application Development | Not started |
 | Phase 2 UI/UX | Not started |
 | Backend Development | Not started |
@@ -66,13 +66,13 @@ Original Office files under `Document/` are retained unchanged as references and
 | 3 | `03-nfr.md` | Present; complete and validated |
 | 4 | `04-use-case-specification.md` | Present; complete and validated |
 | 5 | `05-user-stories.md` | Present; complete and validated |
-| 6 | `06-acceptance-criteria.md` | Not created |
-| 7 | `07-uml.md` | Not created |
-| 8 | `08-erd.md` | Not created |
-| 9 | `09-database-dictionary.md` | Not created |
-| 10 | `10-openapi.yaml` | Not created |
-| 11 | `11-system-design-document.md` | Not created |
-| 12 | `requirements-traceability-matrix.md` | Not created |
+| 6 | `06-acceptance-criteria.md` | Present; complete and validated |
+| 7 | `07-uml.md` | Present; complete and validated |
+| 8 | `08-erd.md` | Present; complete and validated |
+| 9 | `09-database-dictionary.md` | Present; complete and validated |
+| 10 | `10-openapi.yaml` | Present; complete and validated |
+| 11 | `11-system-design-document.md` | Present; complete and validated |
+| 12 | `requirements-traceability-matrix.md` | Present; complete and validated |
 | — | `assumptions-open-questions.md` | Present; active controlled register |
 
 Files are created in dependency order. A missing downstream file is intentional until its upstream documentation is complete and validated.
@@ -220,5 +220,5 @@ Do not modify application source code, generate production code, alter Office re
 |---|---|
 | Last Updated | 2026-08-12 |
 | Updated By | Project Team |
-| Current Milestone | User Stories complete; begin Acceptance Criteria |
-| Current Focus | Acceptance Criteria (`06-acceptance-criteria.md`) |
+| Current Milestone | Phase 1 Complete |
+| Current Focus | Phase 1 Complete |

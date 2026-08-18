@@ -1,0 +1,513 @@
+openapi: 3.0.3
+info:
+  title: Law Firm Management System API
+  description: Internal and public REST API for the Law Firm Website & Management System.
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: Base API path
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        status:
+          type: integer
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        roleId:
+          type: string
+        isActive:
+          type: boolean
+
+    Lead:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        issueDescription:
+          type: string
+        source:
+          type: string
+        status:
+          type: string
+        assignedTo:
+          type: string
+          format: uuid
+          nullable: true
+
+    LeadCreateRequest:
+      type: object
+      required: [fullName, issueDescription]
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        issueDescription:
+          type: string
+
+    Case:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        status:
+          type: string
+        openedAt:
+          type: string
+          format: date-time
+
+    Appointment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        appointmentType:
+          type: string
+        status:
+          type: string
+        scheduledAt:
+          type: string
+          format: date-time
+        locationOrLink:
+          type: string
+          nullable: true
+
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        originalName:
+          type: string
+        mimeType:
+          type: string
+        sizeBytes:
+          type: integer
+        uploadedAt:
+          type: string
+          format: date-time
+
+    Blog:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        slug:
+          type: string
+        content:
+          type: string
+        isPublished:
+          type: boolean
+
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate user
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      summary: Refresh access token
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: New tokens generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Invalid or expired refresh token
+
+  /auth/logout:
+    post:
+      summary: Terminate session
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Successfully logged out
+
+  /users:
+    get:
+      summary: List users
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Create new user
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: User created
+
+  /users/{id}:
+    patch:
+      summary: Update user details or deactivate
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roleId:
+                  type: string
+                isActive:
+                  type: boolean
+      responses:
+        '200':
+          description: User updated
+
+  /lawyers:
+    get:
+      summary: List published lawyer profiles
+      tags: [Lawyers]
+      responses:
+        '200':
+          description: Public list of lawyers
+
+  /leads:
+    get:
+      summary: List leads
+      tags: [Leads]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of leads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lead'
+    post:
+      summary: Submit a new lead (public)
+      tags: [Leads]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeadCreateRequest'
+      responses:
+        '201':
+          description: Lead submitted successfully
+
+  /leads/{id}:
+    patch:
+      summary: Update lead status or assignment
+      tags: [Leads]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                assignedTo:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Lead updated
+
+  /cases:
+    post:
+      summary: Convert Lead to Case
+      tags: [Cases]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                leadId:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Case created successfully
+
+  /cases/{id}:
+    get:
+      summary: Get case details
+      tags: [Cases]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Case details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Case'
+    patch:
+      summary: Update case status
+      tags: [Cases]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Case updated
+
+  /appointments:
+    post:
+      summary: Schedule appointment
+      tags: [Appointments]
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Appointment scheduled
+
+  /appointments/{id}:
+    patch:
+      summary: Update appointment status
+      tags: [Appointments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Appointment updated
+
+  /documents:
+    post:
+      summary: Upload document
+      tags: [Documents]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                caseId:
+                  type: string
+                  format: uuid
+                leadId:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Document uploaded
+
+  /documents/{id}/download:
+    get:
+      summary: Get pre-signed URL to download document
+      tags: [Documents]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Returns pre-signed URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+
+  /services:
+    get:
+      summary: List public services
+      tags: [Services]
+      responses:
+        '200':
+          description: Public list of services
+
+  /blogs:
+    get:
+      summary: List published blogs
+      tags: [Blogs]
+      responses:
+        '200':
+          description: Public list of blogs
+
+  /case-studies:
+    get:
+      summary: List published case studies
+      tags: [Case Studies]
+      responses:
+        '200':
+          description: Public list of case studies
+
+  /seo:
+    patch:
+      summary: Update SEO metadata for a target entity
+      tags: [SEO]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: SEO metadata updated
+
+  /dashboard:
+    get:
+      summary: Get operational metrics
+      tags: [Dashboard]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: High-level metrics
+
+  /notifications:
+    get:
+      summary: Get user notifications
+      tags: [Notifications]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of notifications
+
+  /audit-logs:
+    get:
+      summary: View audit logs
+      tags: [Audit Logs]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of system actions
