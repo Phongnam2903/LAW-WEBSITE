@@ -21,6 +21,7 @@
 | Date       | Change type | In charge | Description                                                                       |
 | ---------- | ----------- | --------- | --------------------------------------------------------------------------------- |
 | 2026-08-12 | Added       | PhongNN   | Created the Phase 2 Information Architecture from the validated Phase 1 baseline. |
+| 2026-08-18 | Re-validated| AI Agent  | Reviewed against Phase 1 constraints. Passed.                                     |
 
 ## 1. Purpose and Scope
 
@@ -206,4 +207,4 @@ Role-based visibility of each sidebar item is `TBD` pending the final RBAC matri
 - Terminology (roles, Lead sources/statuses, Appointment types/statuses) matches `01-brd.md` §9 exactly.
 - No Next.js routing architecture (route groups, dynamic-segment syntax, middleware) is frozen; route candidates are conceptual paths only.
 
-**Validation status:** Passed 2026-08-12.
+**Validation status:** Passed 2026-08-18.

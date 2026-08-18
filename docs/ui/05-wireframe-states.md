@@ -18,6 +18,7 @@
 | Date | Change type | In charge | Description |
 |---|---|---|---|
 | 2026-08-12 | Added | Phase 2 Agent | Defined non-happy-path states for every applicable screen category, each mapped to a Screen ID. |
+| 2026-08-18 | Re-validated| AI Agent | Reviewed against Phase 1 constraints and Wireframes. Passed. |
 
 ## 1. Purpose
 
@@ -139,4 +140,4 @@ Applies to any state-changing action that is not a full form submission: Lead st
 - `NFR-REL-001` (no false-success, no partial Lead-to-Case outcomes) is directly reflected in the Mutation and Conversion states.
 - `NFR-ERR-001` (no stack traces/technical detail in errors) is directly reflected in every Error/Server Error state.
 
-**Validation status:** Passed 2026-08-12.
+**Validation status:** Passed 2026-08-18.

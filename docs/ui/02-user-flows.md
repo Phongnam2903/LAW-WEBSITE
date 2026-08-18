@@ -18,6 +18,7 @@
 | Date | Change type | In charge | Description |
 |---|---|---|---|
 | 2026-08-12 | Added | Phase 2 Agent | Created Phase 2 user flows for all major business journeys identified in the BRD/FRS/Use Case baseline. |
+| 2026-08-18 | Re-validated| AI Agent | Reviewed against Phase 1 constraints and IA. Passed. |
 
 ## 1. Purpose
 
@@ -230,4 +231,4 @@ Draft/review/publish/unpublish/archive state names are `PROPOSED` pending `OQ-21
 - The Lead status flow shows only the confirmed positive progression `NEW → CONTACTED → QUALIFIED → CONVERTED`; `LOST` is intentionally omitted pending `OQ-15`.
 - Notification, document, and CMS flows do not assume delivery guarantees or lifecycle states that Phase 1 leaves unresolved.
 
-**Validation status:** Passed 2026-08-12.
+**Validation status:** Passed 2026-08-18.

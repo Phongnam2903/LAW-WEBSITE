@@ -24,31 +24,32 @@
 ## 1. System / Actor Use Case View
 
 ```mermaid
-usecaseDiagram
-    actor "Guest / Public Visitor" as Guest
-    actor "SUPER_ADMIN" as Admin
-    actor "LAWYER" as Lawyer
-    actor "LEGAL_ASSISTANT" as Assistant
-    actor "CONTENT_CREATOR" as Creator
+flowchart LR
+    %% Actors
+    Guest(["Guest / Public Visitor"])
+    Admin(["SUPER_ADMIN"])
+    Lawyer(["LAWYER"])
+    Assistant(["LEGAL_ASSISTANT"])
+    Creator(["CONTENT_CREATOR"])
 
-    package "Law Firm Website & Management System" {
-        usecase "Browse Website" as UC_WEB
-        usecase "Submit Lead" as UC_LEAD_SUBMIT
-        usecase "View Lawyer Profile" as UC_LAW_PUB
+    subgraph System ["Law Firm Website & Management System"]
+        UC_WEB("Browse Website")
+        UC_LEAD_SUBMIT("Submit Lead")
+        UC_LAW_PUB("View Lawyer Profile")
         
-        usecase "Manage Lead" as UC_LEAD_MANAGE
-        usecase "Convert to Case" as UC_CASE_CONV
-        usecase "Manage Case" as UC_CASE_MANAGE
+        UC_LEAD_MANAGE("Manage Lead")
+        UC_CASE_CONV("Convert to Case")
+        UC_CASE_MANAGE("Manage Case")
         
-        usecase "Schedule Appointment" as UC_APP
+        UC_APP("Schedule Appointment")
         
-        usecase "Manage Users" as UC_USER
+        UC_USER("Manage Users")
         
-        usecase "Manage Content" as UC_CMS
-        usecase "Manage SEO" as UC_SEO
+        UC_CMS("Manage Content")
+        UC_SEO("Manage SEO")
         
-        usecase "Upload/View Document" as UC_DOC
-    }
+        UC_DOC("Upload/View Document")
+    end
 
     Guest --> UC_WEB
     Guest --> UC_LEAD_SUBMIT

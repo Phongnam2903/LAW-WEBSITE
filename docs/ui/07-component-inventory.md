@@ -18,6 +18,7 @@
 | Date | Change type | In charge | Description |
 |---|---|---|---|
 | 2026-08-12 | Added | Phase 2 Agent | Catalogued reusable UI components identified across all wireframed screens, prior to any frontend implementation. |
+| 2026-08-18 | Re-validated| AI Agent | Reviewed against Phase 1 constraints and Design System. Passed. |
 
 ## 1. Purpose
 
@@ -105,4 +106,4 @@ This document identifies every reusable UI component implied by `04-wireframes.m
 - No component specification includes React/TypeScript implementation detail — props are described conceptually only.
 - `CaseSummary`'s status field is explicitly marked as a placeholder pending `OQ-03`/`UI-OQ-015`, preventing an invented Case-status vocabulary from leaking into the component layer.
 
-**Validation status:** Passed 2026-08-12.
+**Validation status:** Passed 2026-08-18.

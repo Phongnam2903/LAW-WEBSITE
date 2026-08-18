@@ -18,6 +18,7 @@
 | Date | Change type | In charge | Description |
 |---|---|---|---|
 | 2026-08-12 | Added | Phase 2 Agent | Composed conceptual high-fidelity specification from the validated IA, flows, screens, wireframes, states, design system, and responsive strategy. |
+| 2026-08-18 | Re-validated| AI Agent | Reviewed against Phase 1 constraints and previous Phase 2 artifacts. Passed. |
 
 ## 1. Purpose and Gate
 
@@ -142,4 +143,4 @@ This document does not redefine responsive behavior — it confirms that every h
 - Motion is kept minimal and respects `prefers-reduced-motion`, consistent with the "calm" brand principle and general accessibility good practice.
 - All prerequisite documents (`01`–`08`) show a passed Validation Record as of 2026-08-12, satisfying the gating condition in §1.
 
-**Validation status:** Passed 2026-08-12.
+**Validation status:** Passed 2026-08-18.
