@@ -1,0 +1,30 @@
+# Root-level, cross-cutting ignore rules only. `frontend/` and `backend/` each carry
+# their own generated `.gitignore` (from create-next-app / Spring Initializr) covering
+# node_modules, .next, target, IDE metadata, etc. for that app specifically — this file
+# does not duplicate those.
+
+# --- Environment / secrets ---
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+!**/.env.example
+
+# --- Docker / infra local data ---
+infra/**/data/
+infra/**/*.local.yml
+
+# --- IDE ---
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log

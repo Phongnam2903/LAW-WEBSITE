@@ -1,0 +1,126 @@
+# Local development infrastructure. Default `docker compose up` starts only the
+# infrastructure services (mysql, minio, minio-init) — frontend and backend run
+# natively on the host for fast iteration (hot reload, no volume-mount overhead,
+# native debugger attachment). Run `docker compose --profile full up --build` to
+# also containerize frontend/backend, e.g. to reproduce a CI-like environment.
+#
+# All credentials/ports below read from a root `.env` (copy `.env.example` to `.env`),
+# using the exact same variable names the backend/frontend also read — one env file
+# describes the whole local stack. Every variable has a local-only fallback default,
+# so `docker compose up` works with zero setup even without a `.env` file.
+#
+# See docs/technical-foundation/08-docker-development.md and
+# docs/technical-foundation/09-environment-configuration.md.
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: lawfirm-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-lawfirm}
+      MYSQL_USER: ${DB_USERNAME:-lawfirm}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-lawfirm}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    ports:
+      # Host-side 3307, not 3306: many dev machines already run a local MySQL/XAMPP/MAMP
+      # instance bound to 3306, so 3306 is the single most conflict-prone default port for
+      # this kind of setup. Inter-container traffic (the `full` profile's backend service)
+      # is unaffected — it addresses this service as `mysql:3306` over the compose network.
+      - "${DB_PORT:-3307}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: lawfirm-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${STORAGE_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY:-minioadmin}
+    ports:
+      - "9000:9000" # S3 API
+      - "9001:9001" # Web console
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: lawfirm-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${STORAGE_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY:-minioadmin}
+    volumes:
+      - ./infra/minio/create-buckets.sh:/create-buckets.sh:ro
+    entrypoint: ["/bin/sh", "/create-buckets.sh"]
+    restart: "no"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: lawfirm-backend
+    profiles: ["full"]
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME:-lawfirm}
+      DB_USERNAME: ${DB_USERNAME:-lawfirm}
+      DB_PASSWORD: ${DB_PASSWORD:-lawfirm}
+      STORAGE_ENDPOINT: http://minio:9000
+      STORAGE_ACCESS_KEY: ${STORAGE_ACCESS_KEY:-minioadmin}
+      STORAGE_SECRET_KEY: ${STORAGE_SECRET_KEY:-minioadmin}
+      STORAGE_BUCKET: ${STORAGE_BUCKET:-lawfirm-documents}
+    ports:
+      - "8080:8080" # API (context-path /api/v1)
+      - "8081:8081" # Actuator (health/info only)
+    depends_on:
+      mysql:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8080}
+    container_name: lawfirm-frontend
+    profiles: ["full"]
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8080}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  agent:
+    build:
+      context: ./ai_agent
+    container_name: lawfirm-agent
+    profiles: ["full"]
+    environment:
+      APP_ENV: production
+      APP_PORT: "8000"
+      CORS_ORIGINS: http://localhost:3000
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    ports:
+      - "${AGENT_PORT:-8000}:8000" # FastAPI (health at /health, API under /api/v1)
+
+volumes:
+  mysql-data:
+  minio-data:

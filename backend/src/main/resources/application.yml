@@ -1,0 +1,27 @@
+# Base configuration shared by every profile. Profile-specific overrides live in
+# application-local.yml / application-test.yml / application-prod.yml.
+# See docs/technical-foundation/09-environment-configuration.md for the full variable catalog.
+
+spring:
+  application:
+    name: backend
+  profiles:
+    active: local
+
+server:
+  servlet:
+    # Matches the `servers.url: /api/v1` base path in docs/10-openapi.yaml.
+    context-path: /api/v1
+
+management:
+  server:
+    # Actuator is served on its own port, unprefixed by /api/v1, so it is not exposed
+    # through the public API surface (see 08-docker-development.md for port handling).
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
