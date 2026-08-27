@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { AnimatedHeading } from "@/components/ui/AnimatedHeading";
 
@@ -39,12 +40,20 @@ export function HeroSection() {
               ))}
             </div>
 
-            <button
-              type="button"
-              className="rounded-lg bg-white px-6 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-100"
-            >
-              Đặt lịch tư vấn
-            </button>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/login"
+                className="hidden rounded-lg border border-white/30 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-white hover:text-black sm:inline-flex"
+              >
+                Đăng nhập
+              </Link>
+              <button
+                type="button"
+                className="rounded-lg bg-white px-6 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-100"
+              >
+                Đặt lịch tư vấn
+              </button>
+            </div>
           </div>
         </nav>
 
