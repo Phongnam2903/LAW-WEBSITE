@@ -47,12 +47,12 @@ export function HeroSection() {
               >
                 Đăng nhập
               </Link>
-              <button
-                type="button"
+              <Link
+                href="/consultation"
                 className="rounded-lg bg-white px-6 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-100"
               >
                 Đặt lịch tư vấn
-              </button>
+              </Link>
             </div>
           </div>
         </nav>
@@ -74,12 +74,12 @@ export function HeroSection() {
 
               <FadeIn delay={1200} duration={1000}>
                 <div className="flex flex-wrap gap-4">
-                  <button
-                    type="button"
-                    className="rounded-lg bg-white px-8 py-3 font-medium text-black"
+                  <Link
+                    href="/consultation"
+                    className="rounded-lg bg-white px-8 py-3 font-medium text-black transition-colors hover:bg-gray-100"
                   >
                     Đặt lịch tư vấn
-                  </button>
+                  </Link>
                   <button
                     type="button"
                     className="liquid-glass rounded-lg border border-white/20 px-8 py-3 font-medium text-white transition-colors hover:bg-white hover:text-black"
