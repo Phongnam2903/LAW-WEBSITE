@@ -1,8 +1,16 @@
 "use client";
 
-import { type SubmitEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  ShieldCheck,
+} from "lucide-react";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { AnimatedHeading } from "@/components/ui/AnimatedHeading";
 
@@ -34,6 +42,8 @@ function GoogleIcon() {
 }
 
 export function LoginSection() {
+  const [showPassword, setShowPassword] = useState(false);
+
   // Auth wiring pending backend implementation — see backend/.../auth (placeholder package only).
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,7 +67,7 @@ export function LoginSection() {
           <FadeIn duration={600}>
             <div className="liquid-glass mb-6 inline-flex w-fit items-center gap-2 rounded-pill px-4 py-2 text-sm">
               <ShieldCheck className="h-4 w-4 text-gold-600" />
-              <span>Dành cho đội ngũ pháp lý chuyên nghiệp</span>
+              <span>Dành cho cá nhân & doanh nghiệp</span>
             </div>
           </FadeIn>
 
@@ -87,24 +97,54 @@ export function LoginSection() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="email"
-              name="email"
-              autoComplete="email"
-              required
-              aria-label="Địa chỉ email"
-              placeholder="Vd. nguyenvana@gmail.com"
-              className="w-full rounded-lg border border-neutral-300 bg-neutral-100 px-5 py-4 text-sm text-charcoal-900 outline-none transition-colors placeholder:text-charcoal-600/70 focus:border-navy-700 focus:bg-white"
-            />
-            <input
-              type="password"
-              name="password"
-              autoComplete="current-password"
-              required
-              aria-label="Mật khẩu"
-              placeholder="Mật khẩu"
-              className="w-full rounded-lg border border-neutral-300 bg-neutral-100 px-5 py-4 text-sm text-charcoal-900 outline-none transition-colors placeholder:text-charcoal-600/70 focus:border-navy-700 focus:bg-white"
-            />
+            <div className="relative">
+              <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-charcoal-600/50" />
+              <input
+                type="email"
+                name="email"
+                autoComplete="email"
+                required
+                aria-label="Địa chỉ email"
+                placeholder="Vd. nguyenvana@gmail.com"
+                className="w-full rounded-lg border border-neutral-300 bg-neutral-100 py-4 pl-11 pr-4 text-sm text-charcoal-900 outline-none transition-colors placeholder:text-charcoal-600/70 focus:border-navy-700 focus:bg-white"
+              />
+            </div>
+
+            <div>
+              <div className="relative">
+                <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-charcoal-600/50" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  autoComplete="current-password"
+                  required
+                  aria-label="Mật khẩu"
+                  placeholder="Mật khẩu"
+                  className="w-full rounded-lg border border-neutral-300 bg-neutral-100 py-4 pl-11 pr-11 text-sm text-charcoal-900 outline-none transition-colors placeholder:text-charcoal-600/70 focus:border-navy-700 focus:bg-white"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-charcoal-600/50 transition-colors hover:text-charcoal-900"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+
+              <div className="mt-2 flex justify-end">
+                <Link
+                  href="/forgot-password"
+                  className="text-xs font-medium text-charcoal-600 transition-colors hover:text-navy-900 hover:underline"
+                >
+                  Quên mật khẩu?
+                </Link>
+              </div>
+            </div>
 
             <button
               type="submit"
@@ -132,10 +172,10 @@ export function LoginSection() {
           <p className="mt-6 text-center text-sm text-charcoal-600">
             Chưa có tài khoản?{" "}
             <Link
-              href="#"
-              className="font-semibold text-charcoal-900 underline underline-offset-4"
+              href="/register"
+              className="font-semibold text-charcoal-900 underline underline-offset-4 hover:text-navy-900"
             >
-              Bắt đầu ngay
+              Đăng ký ngay
             </Link>
           </p>
         </FadeIn>
