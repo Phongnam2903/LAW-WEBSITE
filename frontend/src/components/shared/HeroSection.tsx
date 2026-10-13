@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Sparkles } from "lucide-react";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { AnimatedHeading } from "@/components/ui/AnimatedHeading";
 
@@ -42,6 +43,13 @@ export function HeroSection() {
 
             <div className="flex items-center gap-3">
               <Link
+                href="/chat"
+                className="hidden items-center gap-1.5 rounded-lg border border-gold-600/40 bg-gold-600/10 px-3.5 py-2 text-xs font-semibold text-gold-600 transition-colors hover:bg-gold-600 hover:text-navy-900 md:inline-flex"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                Trợ lý AI
+              </Link>
+              <Link
                 href="/login"
                 className="hidden rounded-lg border border-white/30 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-white hover:text-black sm:inline-flex"
               >
@@ -80,12 +88,13 @@ export function HeroSection() {
                   >
                     Đặt lịch tư vấn
                   </Link>
-                  <button
-                    type="button"
-                    className="liquid-glass rounded-lg border border-white/20 px-8 py-3 font-medium text-white transition-colors hover:bg-white hover:text-black"
+                  <Link
+                    href="/chat"
+                    className="liquid-glass inline-flex items-center gap-2 rounded-lg border border-gold-600/40 px-6 py-3 font-medium text-gold-600 transition-colors hover:bg-gold-600 hover:text-navy-900"
                   >
-                    Khám phá dịch vụ
-                  </button>
+                    <Sparkles className="h-4 w-4" />
+                    Hỏi Trợ lý Pháp lý AI
+                  </Link>
                 </div>
               </FadeIn>
             </div>
