@@ -429,7 +429,7 @@ export function RegisterSection() {
                       <a href="#" className="font-medium text-charcoal-900 underline underline-offset-2">
                         Chính sách bảo mật
                       </a>{" "}
-                      của VietLex Law.
+                      của Công ty Luật Hợp danh Nghiệp Hưng.
                     </span>
                   </label>
                   {errors.consent && (

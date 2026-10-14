@@ -79,7 +79,7 @@ export function ChatPageSection() {
       id: "welcome-main",
       sender: "bot",
       text:
-        "Xin chào quý khách! Tôi là **Trợ lý Pháp lý AI VietLex**.\n\n" +
+        "Xin chào quý khách! Tôi là **Trợ lý Pháp lý AI** của **Công ty Luật Hợp danh Nghiệp Hưng**.\n\n" +
         "Tôi được huấn luyện với nguồn dữ liệu quy phạm pháp luật Việt Nam hiện hành (Bộ luật Dân sự, Luật Đất đai 2024, Luật Doanh nghiệp, Luật Hôn nhân & Gia đình, Bộ luật Lao động và các Nghị định hướng dẫn).\n\n" +
         "Bạn có thể đặt câu hỏi về bất kỳ tình huống pháp lý nào, hoặc chọn các chủ đề gợi ý bên dưới để bắt đầu:",
       timestamp: "09:00",
@@ -169,7 +169,7 @@ export function ChatPageSection() {
         id: createMessageId("welcome"),
         sender: "bot",
         text:
-          "Chào mừng bạn đến với phiên tư vấn mới. Hãy mô tả chi tiết tình huống pháp lý của bạn để VietLex AI phân tích và đưa ra giải pháp.",
+          "Chào mừng bạn đến với phiên tư vấn mới. Hãy mô tả chi tiết tình huống pháp lý của bạn để AI Nghiệp Hưng phân tích và đưa ra giải pháp.",
         timestamp: getCurrentTimeString(),
         suggestions: [
           "Thủ tục ly hôn đơn phương",
@@ -203,7 +203,7 @@ export function ChatPageSection() {
             </div>
             <div>
               <span className="font-serif text-lg font-bold tracking-tight text-white">
-                VietLex Law
+                Luật Nghiệp Hưng
               </span>
               <p className="text-[10px] text-gold-600 font-medium">Trí tuệ Nhân tạo Pháp lý</p>
             </div>
@@ -275,7 +275,7 @@ export function ChatPageSection() {
             className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-neutral-300 transition-colors hover:bg-white/5 hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Về trang chủ VietLex</span>
+            <span>Về trang chủ Luật Nghiệp Hưng</span>
           </Link>
         </div>
       </aside>
@@ -299,7 +299,7 @@ export function ChatPageSection() {
               </div>
               <div>
                 <h1 className="font-serif text-sm md:text-base font-semibold text-charcoal-900 flex items-center gap-2">
-                  VietLex Legal AI Counsel
+                  Trợ lý Pháp lý AI Nghiệp Hưng
                   <span className="hidden sm:inline-flex items-center gap-1 rounded-pill bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 border border-emerald-200">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     Đang hoạt động 24/7
@@ -392,7 +392,7 @@ export function ChatPageSection() {
                       <div className="mb-2 flex items-center justify-between border-b border-neutral-200/60 pb-2 text-xs">
                         <span className="font-semibold text-navy-900 flex items-center gap-1.5">
                           <Sparkles className="h-3.5 w-3.5 text-gold-600" />
-                          Trợ lý Pháp lý VietLex AI
+                          Trợ lý Pháp lý AI Nghiệp Hưng
                         </span>
                         <button
                           type="button"
@@ -507,7 +507,7 @@ export function ChatPageSection() {
             {isTyping && (
               <div className="flex items-center gap-3 text-xs text-charcoal-600 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 py-3 w-fit shadow-xs animate-pulse">
                 <Bot className="h-4 w-4 text-gold-600 animate-spin" />
-                <span>Trợ lý VietLex đang tra cứu và tổng hợp cơ sở pháp lý...</span>
+                <span>Trợ lý Nghiệp Hưng đang tra cứu và tổng hợp cơ sở pháp lý...</span>
               </div>
             )}
 
@@ -593,7 +593,7 @@ export function ChatPageSection() {
 
             <p className="mt-2.5 text-center text-[11px] text-charcoal-600/80">
               <ShieldCheck className="inline h-3 w-3 text-gold-600 mr-1" />
-              Thông tin từ VietLex AI mang tính tham khảo sơ bộ • Để có giá trị pháp lý chính thức, hãy{" "}
+              Thông tin từ AI Nghiệp Hưng mang tính tham khảo sơ bộ • Để có giá trị pháp lý chính thức, hãy{" "}
               <Link href="/consultation" className="font-semibold text-navy-900 underline hover:text-gold-600">
                 đặt lịch tư vấn với luật sư phụ trách
               </Link>.

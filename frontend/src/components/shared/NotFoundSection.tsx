@@ -15,7 +15,7 @@ function Logo() {
         <div className="h-2.5 w-2.5 rounded-full bg-white sm:h-3 sm:w-3" />
         <div className="h-2.5 w-2.5 rounded-full bg-white sm:h-3 sm:w-3" />
       </div>
-      <span className="ml-1 text-lg font-bold text-white sm:text-xl">VietLex Law</span>
+      <span className="ml-1 text-lg font-bold text-white sm:text-xl">Luật Nghiệp Hưng</span>
     </div>
   );
 }

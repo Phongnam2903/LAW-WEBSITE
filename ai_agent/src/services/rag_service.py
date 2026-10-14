@@ -137,7 +137,7 @@ class LegalRAGService:
             rejection_message = (
                 "Căn cứ vào cơ sở dữ liệu pháp luật hiện có, hệ thống không tìm thấy quy định phù hợp "
                 "để đưa ra kết luận cho tình huống này. Quý khách vui lòng kiểm tra lại câu hỏi hoặc "
-                "đặt lịch hẹn để được luật sư chuyên trách tư vấn trực tiếp."
+                "đặt lịch hẹn để được luật sư Công ty Luật Hợp danh Nghiệp Hưng tư vấn trực tiếp."
             )
             return {
                 "response": rejection_message,
@@ -169,13 +169,13 @@ class LegalRAGService:
         context_text = "\n\n".join(context_blocks)
 
         system_prompt = (
-            "Bạn là Trợ lý Pháp lý AI chuyên sâu về Pháp luật Việt Nam. Nhiệm vụ của bạn là giải đáp thắc mắc "
-            "của người dùng DỰA HOÀN TOÀN VÀO CĂN CỨ PHÁP LÝ ĐƯỢC CUNG CẤP DƯỚI ĐÂY.\n\n"
+            "Bạn là Trợ lý Pháp lý AI của Công ty Luật Hợp danh Nghiệp Hưng, chuyên sâu về Pháp luật Việt Nam. "
+            "Nhiệm vụ của bạn là giải đáp thắc mắc của người dùng DỰA HOÀN TOÀN VÀO CĂN CỨ PHÁP LÝ ĐƯỢC CUNG CẤP DƯỚI ĐÂY.\n\n"
             "QUY TẮC BẮT BUỘC:\n"
             "1. CHỈ sử dụng thông tin có trong phần CĂN CỨ PHÁP LÝ. TUYỆT ĐỐI KHÔNG tự suy đoán, bịa đặt hoặc đưa ra thông tin không có trong tài liệu.\n"
             "2. Nếu căn cứ pháp lý được cung cấp KHÔNG ĐỦ để trả lời chính xác, bạn BẮT BUỘC phải trả lời: "
             "'Căn cứ vào cơ sở dữ liệu pháp luật hiện có, hệ thống không tìm thấy quy định phù hợp để đưa ra kết luận cho tình huống này. "
-            "Quý khách vui lòng kiểm tra lại câu hỏi hoặc đặt lịch hẹn để được luật sư chuyên trách tư vấn trực tiếp.'\n"
+            "Quý khách vui lòng kiểm tra lại câu hỏi hoặc đặt lịch hẹn để được luật sư Công ty Luật Hợp danh Nghiệp Hưng tư vấn trực tiếp.'\n"
             "3. BẮT BUỘC trình bày câu trả lời theo đúng 4 phần sau:\n"
             "### 1. Kết luận & Hướng dẫn giải quyết:\n"
             "(Nêu câu trả lời rõ ràng, chính xác, trực diện)\n\n"

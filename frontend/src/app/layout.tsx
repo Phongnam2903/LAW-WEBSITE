@@ -14,9 +14,9 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "VietLex Law | Nền Tảng Pháp Lý & Trợ Lý Trí Tuệ Nhân Tạo",
+  title: "Công ty Luật Hợp danh Nghiệp Hưng | Nền Tảng Pháp Lý & Trợ Lý Trí Tuệ Nhân Tạo",
   description:
-    "Đồng hành cùng cá nhân và doanh nghiệp với giải pháp pháp lý chuyên nghiệp, minh bạch và Trợ lý Pháp lý AI 24/7.",
+    "Công ty Luật Hợp danh Nghiệp Hưng - Đồng hành cùng cá nhân và doanh nghiệp với giải pháp pháp lý chuyên nghiệp, minh bạch và Trợ lý Pháp lý AI 24/7.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

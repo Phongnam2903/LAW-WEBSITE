@@ -38,7 +38,7 @@ async def greeting_node(state: AgentState) -> dict:
         )
     elif intent == "bot_info":
         response_text = (
-            "Tôi là **Trợ lý Pháp lý AI** được phát triển chuyên sâu về Pháp luật Việt Nam.\n\n"
+            "Tôi là **Trợ lý Pháp lý AI** của **Công ty Luật Hợp danh Nghiệp Hưng**, chuyên sâu về Pháp luật Việt Nam.\n\n"
             "Chức năng chính của tôi:\n"
             "- Tra cứu chính xác các điều khoản trong **Luật Doanh nghiệp 2020** và **Bộ luật Lao động 2019**.\n"
             "- Giải đáp các tình huống pháp lý có căn cứ, trích dẫn rõ số hiệu, điều khoản và ngày hiệu lực.\n"
@@ -47,7 +47,7 @@ async def greeting_node(state: AgentState) -> dict:
         )
     else:  # greeting
         response_text = (
-            "Xin chào Quý khách! Tôi là **Trợ lý Pháp lý AI** chuyên sâu về Pháp luật Việt Nam.\n\n"
+            "Xin chào Quý khách! Tôi là **Trợ lý Pháp lý AI** của **Công ty Luật Hợp danh Nghiệp Hưng**.\n\n"
             "Tôi có thể hỗ trợ Quý khách tra cứu và giải đáp các quy định pháp lý liên quan đến:\n"
             "- 🏢 **Luật Doanh nghiệp 2020**: Thành lập doanh nghiệp, góp vốn, người đại diện theo pháp luật, quyền & nghĩa vụ...\n"
             "- ⚖️ **Bộ luật Lao động 2019**: Hợp đồng lao động, thời hạn báo trước, tiền lương, kỷ luật, chấm dứt hợp đồng...\n\n"

@@ -27,7 +27,7 @@ export function HeroSection() {
       <div className="relative flex h-full flex-col text-white">
         <nav className="px-6 pt-6 md:px-12 lg:px-16">
           <div className="liquid-glass flex items-center justify-between rounded-xl px-4 py-2">
-            <span className="text-2xl font-semibold tracking-tight">VietLex Law</span>
+            <span className="text-2xl font-semibold tracking-tight">Luật Nghiệp Hưng</span>
 
             <div className="hidden items-center gap-8 md:flex">
               {NAV_LINKS.map((link) => (

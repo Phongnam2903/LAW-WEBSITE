@@ -191,7 +191,7 @@ export function generateBotResponse(userQuery: string): {
       suggestions: [
         "Nên thành lập Công ty TNHH hay Công ty Cổ phần?",
         "Mức phạt nếu không góp đủ vốn điều lệ trong 90 ngày?",
-        "Dịch vụ trọn gói thành lập công ty VietLex Law?",
+        "Dịch vụ trọn gói thành lập công ty tại Luật Nghiệp Hưng?",
       ],
       action: {
         label: "Tư vấn Luật Doanh nghiệp & Đầu tư",
@@ -227,7 +227,7 @@ export function generateBotResponse(userQuery: string): {
       ],
       suggestions: [
         "Các trường hợp được miễn hoặc giảm án phí Tòa án?",
-        "Bảng giá dịch vụ luật sư tranh tụng VietLex?",
+        "Bảng giá dịch vụ luật sư tranh tụng Luật Nghiệp Hưng?",
         "Đặt lịch tư vấn ước tính chi phí giải quyết vụ án",
       ],
       action: {
@@ -319,12 +319,12 @@ export function generateBotResponse(userQuery: string): {
     query.includes("địa chỉ")
   ) {
     return {
-      text: `Bạn có thể dễ dàng kết nối với đội ngũ luật sư chuyên trách của **VietLex Law** qua các kênh sau:\n\n` +
+      text: `Bạn có thể dễ dàng kết nối với đội ngũ luật sư chuyên trách của **Công ty Luật Hợp danh Nghiệp Hưng** qua các kênh sau:\n\n` +
         `1. **Đặt lịch hẹn trực tuyến:** Điền thông tin yêu cầu và chọn khung giờ tại trang Đặt lịch tư vấn (hỗ trợ cả tư vấn trực tiếp tại văn phòng và tư vấn qua video call).\n` +
         `2. **Hotline tiếp nhận vụ việc 24/7:** \`1900 1234\` hoặc \`+84 28 3822 9999\`.\n` +
-        `3. **Văn phòng chính:** Tầng 18, VietLex Tower, Quận 1, TP. Hồ Chí Minh.\n\n` +
+        `3. **Văn phòng chính:** Tầng 18, Tòa nhà Nghiệp Hưng, Quận 1, TP. Hồ Chí Minh.\n\n` +
         `Đội ngũ thư ký luật sư sẽ liên hệ lại xác nhận và sắp xếp luật sư chuyên môn phù hợp nhất trong vòng 30 phút.`,
-      citations: ["Quy chế tư vấn khách hàng VietLex Law 2026"],
+      citations: ["Quy chế tư vấn khách hàng - Công ty Luật Hợp danh Nghiệp Hưng 2026"],
       suggestions: [
         "Chi phí cho một buổi tư vấn ban đầu là bao nhiêu?",
         "Tôi muốn tư vấn vào buổi tối hoặc cuối tuần được không?",
@@ -345,7 +345,7 @@ export function generateBotResponse(userQuery: string): {
       `   - Chú ý thời hiệu khởi kiện hoặc khiếu nại (thường là 02 - 03 năm tùy vụ việc).\n` +
       `   - Lưu trữ, bảo quản đầy đủ chứng cứ bằng văn bản, tin nhắn, email hoặc hóa đơn chuyển khoản.\n` +
       `   - Tránh ký kết các biên bản thỏa thuận tự phát khi chưa rõ hậu quả pháp lý.\n\n` +
-      `3. **Khuyến nghị từ VietLex:** Bạn có thể cung cấp thêm chi tiết cụ thể hơn (tình tiết, giấy tờ hiện có) để Trợ lý AI phân tích sâu hơn, hoặc đặt lịch để luật sư trực tiếp rà soát hồ sơ.`,
+      `3. **Khuyến nghị từ Luật Nghiệp Hưng:** Bạn có thể cung cấp thêm chi tiết cụ thể hơn (tình tiết, giấy tờ hiện có) để Trợ lý AI phân tích sâu hơn, hoặc đặt lịch để luật sư trực tiếp rà soát hồ sơ.`,
     citations: [
       "Bộ luật Dân sự 2015",
       "Hệ thống văn bản quy phạm pháp luật Việt Nam hiện hành",

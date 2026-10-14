@@ -42,7 +42,7 @@ export function ChatbotWidget() {
       id: "welcome-1",
       sender: "bot",
       text:
-        "Xin chào! Tôi là **Trợ lý Pháp lý AI** của VietLex Law.\n\n" +
+        "Xin chào! Tôi là **Trợ lý Pháp lý AI** của **Công ty Luật Hợp danh Nghiệp Hưng**.\n\n" +
         "Tôi có thể hỗ trợ bạn tra cứu quy định pháp luật sơ bộ, giải đáp thủ tục về Đất đai, Doanh nghiệp, Hôn nhân gia đình, Lao động hoặc hỗ trợ đặt lịch hẹn với luật sư chuyên trách.\n\n" +
         "Bạn cần tư vấn vấn đề gì hôm nay?",
       timestamp: "Vừa xong",
@@ -164,7 +164,7 @@ export function ChatbotWidget() {
             <Sparkles className="h-4 w-4" />
           </div>
           <div className="text-left">
-            <p className="font-semibold text-gold-600">Trợ lý Pháp lý AI VietLex</p>
+            <p className="font-semibold text-gold-600">Trợ lý Pháp lý AI Nghiệp Hưng</p>
             <p className="text-neutral-300">Cần tư vấn sơ bộ hoặc tra cứu luật?</p>
           </div>
           <button
@@ -191,7 +191,7 @@ export function ChatbotWidget() {
               <div>
                 <div className="flex items-center gap-1.5">
                   <h3 className="font-serif text-sm font-semibold tracking-wide">
-                    VietLex Legal AI
+                    AI Luật Nghiệp Hưng
                   </h3>
                   <span className="rounded-full bg-gold-600/20 px-1.5 py-0.2 text-[10px] font-medium text-gold-600">
                     24/7
@@ -272,7 +272,7 @@ export function ChatbotWidget() {
                     <div className="mb-1 flex items-center justify-between gap-2 border-b border-neutral-100 pb-1 text-[11px] font-medium text-gold-600">
                       <span className="flex items-center gap-1">
                         <Bot className="h-3.5 w-3.5 text-gold-600" />
-                        Trợ lý VietLex
+                        Trợ lý Nghiệp Hưng
                       </span>
                       <button
                         type="button"
@@ -373,7 +373,7 @@ export function ChatbotWidget() {
             {isTyping && (
               <div className="flex items-center gap-2 text-xs text-charcoal-600 bg-white rounded-2xl border border-neutral-200 px-3.5 py-2.5 w-fit shadow-xs animate-pulse">
                 <Bot className="h-3.5 w-3.5 text-gold-600 animate-spin" />
-                <span>Trợ lý VietLex đang tra cứu quy định pháp luật...</span>
+                <span>Trợ lý Nghiệp Hưng đang tra cứu quy định pháp luật...</span>
               </div>
             )}
 

@@ -39,7 +39,7 @@ const CONSULTATION_METHODS = [
   {
     id: "office",
     title: "Tại Văn phòng",
-    description: "Gặp trực tiếp luật sư tại trụ sở VietLex",
+    description: "Gặp trực tiếp luật sư tại trụ sở Luật Nghiệp Hưng",
     icon: MapPin,
   },
   {
@@ -173,7 +173,7 @@ export function ConsultationSection() {
             </Link>
             <span className="text-neutral-300">|</span>
             <span className="font-serif text-xl font-bold tracking-tight text-navy-900">
-              VietLex Law
+              Luật Nghiệp Hưng
             </span>
           </div>
 
@@ -214,7 +214,7 @@ export function ConsultationSection() {
 
                 <p className="mt-3 text-sm leading-relaxed text-charcoal-600">
                   Mỗi hồ sơ pháp lý đều cần sự cẩn trọng và chiến lược chính xác ngay từ bước đầu.
-                  Đội ngũ luật sư chuyên trách của VietLex sẵn sàng lắng nghe, đánh giá rủi ro và đưa
+                  Đội ngũ luật sư chuyên trách của Công ty Luật Hợp danh Nghiệp Hưng sẵn sàng lắng nghe, đánh giá rủi ro và đưa
                   ra giải pháp tối ưu nhất cho bạn.
                 </p>
               </FadeIn>
@@ -267,7 +267,7 @@ export function ConsultationSection() {
               <div className="mt-3 space-y-2 text-xs text-neutral-300">
                 <p className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 shrink-0 text-gold-600" />
-                  <span>Tầng 18, Tòa nhà VietLex Center, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</span>
+                  <span>Tầng 18, Tòa nhà Nghiệp Hưng, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</span>
                 </p>
                 <p className="flex items-center gap-2">
                   <Phone className="h-4 w-4 shrink-0 text-gold-600" />
@@ -640,7 +640,7 @@ export function ConsultationSection() {
                           className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-navy-900 focus:ring-navy-700"
                         />
                         <span className="text-xs leading-relaxed text-charcoal-600">
-                          Tôi cam kết các thông tin cung cấp trên là đúng sự thật và đồng ý để VietLex Law
+                          Tôi cam kết các thông tin cung cấp trên là đúng sự thật và đồng ý để Công ty Luật Hợp danh Nghiệp Hưng
                           liên hệ hỗ trợ tư vấn theo{" "}
                           <a href="#" className="font-medium text-navy-900 underline hover:text-gold-600">
                             Chính sách bảo mật quyền riêng tư
