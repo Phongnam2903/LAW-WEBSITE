@@ -43,6 +43,10 @@ Original Office files under `Document/` are retained unchanged as references and
 
 **Completed:** 13 of 13 Phase 1 items.
 
+### Active Feature Trackers
+
+- [`ai-agent-customer-plan.md`](ai-agent-customer-plan.md) — Kế hoạch chi tiết & Checklist tiến độ: **AI Trợ Lý Pháp Lý Cho Khách Hàng** (Nhánh `feature/ai_agent_customer`).
+
 ## 4. Current Status
 
 | Field | Status |
