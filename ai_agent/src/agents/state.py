@@ -16,3 +16,4 @@ class AgentState(TypedDict, total=False):
     response: str
     error: str
     metadata: dict
+    intent: str

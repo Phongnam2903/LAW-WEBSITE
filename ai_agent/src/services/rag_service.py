@@ -17,7 +17,7 @@ class LegalRAGService:
         ollama_base_url: str = "http://localhost:11434",
         embed_model: str = "nomic-embed-text:latest",
         llm_model: str = "llama3.1:latest",
-        similarity_threshold: float = 0.42,
+        similarity_threshold: float = 0.48,
         data_root: Optional[Path] = None,
     ):
         self.ollama_base_url = ollama_base_url
