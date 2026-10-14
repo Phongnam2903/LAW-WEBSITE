@@ -10,7 +10,7 @@ if sys.platform == "win32":
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from src.services.rag_service import LegalRAGService
+from src.services.rag_service import LegalRAGService  # noqa: E402
 
 
 def test_rag_pipeline():
@@ -26,7 +26,7 @@ def test_rag_pipeline():
         "Người lao động làm việc theo hợp đồng lao động không xác định thời hạn "
         "khi đơn phương chấm dứt hợp đồng thì phải báo trước ít nhất bao nhiêu ngày theo Điều 35 Bộ luật Lao động?"
     )
-    print(f"\n--- TEST CASE 1: CÂU HỎI CÓ CĂN CỨ PHÁP LÝ ---")
+    print("\n--- TEST CASE 1: CÂU HỎI CÓ CĂN CỨ PHÁP LÝ ---")
     print(f"Câu hỏi: {q1}")
 
     result1 = rag.generate_answer(q1)
@@ -48,7 +48,7 @@ def test_rag_pipeline():
         "Theo Luật Thủy sản Việt Nam, thủ tục cấp giấy phép khai thác thủy sản tại vùng khơi "
         "được quy định như thế nào và thời hạn của giấy phép là bao nhiêu năm?"
     )
-    print(f"\n--- TEST CASE 2: CÂU HỎI NGOÀI PHẠM VI DỮ LIỆU ---")
+    print("\n--- TEST CASE 2: CÂU HỎI NGOÀI PHẠM VI DỮ LIỆU ---")
     print(f"Câu hỏi: {q2}")
 
     result2 = rag.generate_answer(q2)

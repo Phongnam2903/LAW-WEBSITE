@@ -129,13 +129,10 @@ function StepOTP({
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [countdown, setCountdown] = useState(60);
-  const [canResend, setCanResend] = useState(false);
+  const canResend = countdown <= 0;
 
   useEffect(() => {
-    if (countdown <= 0) {
-      setCanResend(true);
-      return;
-    }
+    if (countdown <= 0) return;
     const timer = setTimeout(() => {
       setCountdown((prev) => prev - 1);
     }, 1000);
@@ -179,7 +176,6 @@ function StepOTP({
 
   async function handleResend() {
     setCountdown(60);
-    setCanResend(false);
     setOtp(["", "", "", "", "", ""]);
     // Pending backend: POST /api/v1/auth/forgot-password (resend)
   }

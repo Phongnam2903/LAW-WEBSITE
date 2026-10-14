@@ -1,7 +1,7 @@
 import json
 import math
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import httpx
 
@@ -18,7 +18,7 @@ class LegalRAGService:
         embed_model: str = "nomic-embed-text:latest",
         llm_model: str = "llama3.1:latest",
         similarity_threshold: float = 0.48,
-        data_root: Optional[Path] = None,
+        data_root: Path | None = None,
     ):
         self.ollama_base_url = ollama_base_url
         self.embed_model = embed_model
@@ -31,10 +31,10 @@ class LegalRAGService:
         self.vector_cache_path = self.cache_dir / "vector_index_cache.json"
 
         # Index vectors in memory: {chunk_id: {"vector": [...], "chunk": LegalChunk}}
-        self.vector_index: Dict[str, Dict[str, Any]] = {}
+        self.vector_index: dict[str, dict[str, Any]] = {}
         self.initialized = False
 
-    def get_embedding(self, text: str) -> List[float]:
+    def get_embedding(self, text: str) -> list[float]:
         """Tạo vector embedding cho văn bản qua Ollama API."""
         url = f"{self.ollama_base_url}/api/embeddings"
         payload = {"model": self.embed_model, "prompt": text}
@@ -48,7 +48,7 @@ class LegalRAGService:
             raise RuntimeError(f"Lỗi khi gọi embedding từ Ollama ({self.embed_model}): {e}")
 
     @staticmethod
-    def cosine_similarity(v1: List[float], v2: List[float]) -> float:
+    def cosine_similarity(v1: list[float], v2: list[float]) -> float:
         """Tính độ tương đồng cosin giữa 2 vector."""
         dot = sum(a * b for a, b in zip(v1, v2))
         norm1 = math.sqrt(sum(a * a for a in v1))
@@ -68,7 +68,7 @@ class LegalRAGService:
         cached_vectors = {}
         if self.vector_cache_path.exists() and not force_reindex:
             try:
-                with open(self.vector_cache_path, "r", encoding="utf-8") as f:
+                with open(self.vector_cache_path, encoding="utf-8") as f:
                     cached_vectors = json.load(f)
             except Exception as e:
                 print(f"Lỗi đọc vector cache: {e}")
@@ -97,8 +97,8 @@ class LegalRAGService:
         self.initialized = True
 
     def retrieve(
-        self, query: str, top_k: int = 3, min_similarity: Optional[float] = None
-    ) -> List[Tuple[LegalChunk, float]]:
+        self, query: str, top_k: int = 3, min_similarity: float | None = None
+    ) -> list[tuple[LegalChunk, float]]:
         """Truy xuất các chunk có độ tương đồng ngữ nghĩa cao nhất với query."""
         if not self.initialized:
             self.initialize_index()
@@ -106,7 +106,7 @@ class LegalRAGService:
         threshold = min_similarity if min_similarity is not None else self.similarity_threshold
         query_vec = self.get_embedding(query)
 
-        scored: List[Tuple[LegalChunk, float]] = []
+        scored: list[tuple[LegalChunk, float]] = []
         for item in self.vector_index.values():
             sim = self.cosine_similarity(query_vec, item["vector"])
             if sim >= threshold:
@@ -116,7 +116,7 @@ class LegalRAGService:
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored[:top_k]
 
-    def generate_answer(self, query: str) -> Dict[str, Any]:
+    def generate_answer(self, query: str) -> dict[str, Any]:
         """Thực hiện toàn bộ quy trình RAG (Retrieval + Strict Grounded Generation)."""
         if not self.initialized:
             self.initialize_index()

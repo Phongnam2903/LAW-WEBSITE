@@ -16,15 +16,23 @@ import {
   Scale,
   ShieldCheck,
   ChevronRight,
-  ExternalLink,
-  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import {
   type ChatMessage,
-  QUICK_PROMPTS,
   generateBotResponse,
 } from "@/lib/chatbot-data";
+
+function createMessageId(prefix: string): string {
+  return `${prefix}-${Date.now()}`;
+}
+
+function getCurrentTimeString(): string {
+  return new Date().toLocaleTimeString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export function ChatbotWidget() {
   const pathname = usePathname();
@@ -54,6 +62,8 @@ export function ChatbotWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const isTooltipVisible = showTooltip && !isOpen;
+
   // Auto show tooltip after 3.5s to invite user
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -72,8 +82,8 @@ export function ChatbotWidget() {
   // Focus input when open
   useEffect(() => {
     if (isOpen) {
-      setShowTooltip(false);
-      setTimeout(() => inputRef.current?.focus(), 200);
+      const timer = setTimeout(() => inputRef.current?.focus(), 200);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
@@ -82,13 +92,10 @@ export function ChatbotWidget() {
     if (!query || isTyping) return;
 
     const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
+      id: createMessageId("user"),
       sender: "user",
       text: query,
-      timestamp: new Date().toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      timestamp: getCurrentTimeString(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -99,13 +106,10 @@ export function ChatbotWidget() {
     setTimeout(() => {
       const response = generateBotResponse(query);
       const botMessage: ChatMessage = {
-        id: `bot-${Date.now()}`,
+        id: createMessageId("bot"),
         sender: "bot",
         text: response.text,
-        timestamp: new Date().toLocaleTimeString("vi-VN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        timestamp: getCurrentTimeString(),
         citations: response.citations,
         suggestions: response.suggestions,
         action: response.action,
@@ -132,14 +136,11 @@ export function ChatbotWidget() {
   function handleReset() {
     setMessages([
       {
-        id: `welcome-${Date.now()}`,
+        id: createMessageId("welcome"),
         sender: "bot",
         text:
           "Hội thoại đã được làm mới. Tôi sẵn sàng hỗ trợ bạn tra cứu các vấn đề pháp lý mới. Bạn muốn bắt đầu với chủ đề nào?",
-        timestamp: new Date().toLocaleTimeString("vi-VN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        timestamp: getCurrentTimeString(),
         suggestions: [
           "Thủ tục ly hôn đơn phương",
           "Tranh chấp đất đai",
@@ -157,7 +158,7 @@ export function ChatbotWidget() {
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
       {/* ── Welcome floating invite badge ── */}
-      {!isOpen && showTooltip && (
+      {isTooltipVisible && (
         <div className="mb-3 animate-fade-in flex items-center gap-3 rounded-2xl border border-gold-600/30 bg-navy-900/95 px-4 py-2.5 text-xs text-white shadow-xl backdrop-blur-md">
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gold-600/20 text-gold-600">
             <Sparkles className="h-4 w-4" />

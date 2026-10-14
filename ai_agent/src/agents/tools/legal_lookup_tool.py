@@ -1,4 +1,4 @@
-from typing import List, Optional
+
 from langchain_core.tools import tool
 
 from src.models.legal_document import LegalDocument
@@ -6,10 +6,10 @@ from src.services.legal_corpus_service import LegalCorpusService
 
 # Khởi tạo service corpus
 _corpus_service = LegalCorpusService()
-_cached_docs: Optional[List[LegalDocument]] = None
+_cached_docs: list[LegalDocument] | None = None
 
 
-def _get_all_laws() -> List[LegalDocument]:
+def _get_all_laws() -> list[LegalDocument]:
     global _cached_docs
     if _cached_docs is None:
         _cached_docs = _corpus_service.load_all_documents()

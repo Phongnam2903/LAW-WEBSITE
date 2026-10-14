@@ -16,16 +16,6 @@ import {
   ArrowLeft,
   Plus,
   MessageSquare,
-  FileText,
-  HelpCircle,
-  Clock,
-  Trash2,
-  Share2,
-  Download,
-  AlertCircle,
-  Briefcase,
-  Home,
-  Users,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import {
@@ -40,6 +30,17 @@ interface ChatSession {
   title: string;
   date: string;
   category: string;
+}
+
+function createMessageId(prefix: string): string {
+  return `${prefix}-${Date.now()}`;
+}
+
+function getCurrentTimeString(): string {
+  return new Date().toLocaleTimeString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 const DEFAULT_SESSIONS: ChatSession[] = [
@@ -107,13 +108,10 @@ export function ChatPageSection() {
     if (!query || isTyping) return;
 
     const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
+      id: createMessageId("user"),
       sender: "user",
       text: query,
-      timestamp: new Date().toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      timestamp: getCurrentTimeString(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -124,7 +122,7 @@ export function ChatPageSection() {
     if (messages.length <= 1) {
       setSessions((prev) => [
         {
-          id: `session-${Date.now()}`,
+          id: createMessageId("session"),
           title: query.length > 32 ? query.slice(0, 32) + "..." : query,
           date: "Vừa xong",
           category: "Tư vấn mới",
@@ -136,13 +134,10 @@ export function ChatPageSection() {
     setTimeout(() => {
       const response = generateBotResponse(query);
       const botMessage: ChatMessage = {
-        id: `bot-${Date.now()}`,
+        id: createMessageId("bot"),
         sender: "bot",
         text: response.text,
-        timestamp: new Date().toLocaleTimeString("vi-VN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        timestamp: getCurrentTimeString(),
         citations: response.citations,
         suggestions: response.suggestions,
         action: response.action,
@@ -167,18 +162,15 @@ export function ChatPageSection() {
   }
 
   function handleNewSession() {
-    const newId = `session-${Date.now()}`;
+    const newId = createMessageId("session");
     setActiveSessionId(newId);
     setMessages([
       {
-        id: `welcome-${Date.now()}`,
+        id: createMessageId("welcome"),
         sender: "bot",
         text:
           "Chào mừng bạn đến với phiên tư vấn mới. Hãy mô tả chi tiết tình huống pháp lý của bạn để VietLex AI phân tích và đưa ra giải pháp.",
-        timestamp: new Date().toLocaleTimeString("vi-VN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        timestamp: getCurrentTimeString(),
         suggestions: [
           "Thủ tục ly hôn đơn phương",
           "Tranh chấp đất đai chưa sổ đỏ",

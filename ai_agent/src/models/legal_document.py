@@ -1,10 +1,10 @@
 from datetime import date, datetime
-from enum import Enum
-from typing import Any, Dict, List, Optional
+from enum import StrEnum
+
 from pydantic import BaseModel, Field
 
 
-class LegalDocumentType(str, Enum):
+class LegalDocumentType(StrEnum):
     HIEN_PHAP = "HIEN_PHAP"
     BO_LUAT = "BO_LUAT"
     LUAT = "LUAT"
@@ -16,7 +16,7 @@ class LegalDocumentType(str, Enum):
     THONG_TU_LIEN_TICH = "THONG_TU_LIEN_TICH"
 
 
-class LegalStatus(str, Enum):
+class LegalStatus(StrEnum):
     ACTIVE = "ACTIVE"
     EXPIRED = "EXPIRED"
     PARTIALLY_AMENDED = "PARTIALLY_AMENDED"
@@ -34,7 +34,7 @@ class Clause(BaseModel):
     clause_id: str
     clause_number: int
     text: str
-    points: List[Point] = Field(default_factory=list)
+    points: list[Point] = Field(default_factory=list)
 
 
 class Article(BaseModel):
@@ -42,24 +42,24 @@ class Article(BaseModel):
     article_number: int
     title: str
     full_text: str
-    clauses: List[Clause] = Field(default_factory=list)
-    tags: List[str] = Field(default_factory=list)
-    cross_references: List[str] = Field(default_factory=list)
+    clauses: list[Clause] = Field(default_factory=list)
+    tags: list[str] = Field(default_factory=list)
+    cross_references: list[str] = Field(default_factory=list)
 
 
 class Section(BaseModel):
     section_id: str
     section_number: str
     title: str
-    articles: List[Article] = Field(default_factory=list)
+    articles: list[Article] = Field(default_factory=list)
 
 
 class Chapter(BaseModel):
     chapter_id: str
     chapter_number: str
     title: str
-    sections: Optional[List[Section]] = None
-    articles: List[Article] = Field(default_factory=list)
+    sections: list[Section] | None = None
+    articles: list[Article] = Field(default_factory=list)
 
 
 class Signer(BaseModel):
@@ -74,19 +74,19 @@ class SourceMetadata(BaseModel):
 
 
 class GazetteMetadata(BaseModel):
-    gazette_number: Optional[str] = None
-    gazette_date: Optional[date] = None
+    gazette_number: str | None = None
+    gazette_date: date | None = None
 
 
 class Preamble(BaseModel):
     text: str
-    legal_bases: List[str] = Field(default_factory=list)
+    legal_bases: list[str] = Field(default_factory=list)
 
 
 class LegalDocumentBody(BaseModel):
     total_chapters: int
     total_articles: int
-    chapters: List[Chapter]
+    chapters: list[Chapter]
 
 
 class LegalDocument(BaseModel):
@@ -96,19 +96,19 @@ class LegalDocument(BaseModel):
     document_code: str
     document_type: LegalDocumentType
     title: str
-    short_title: Optional[str] = None
+    short_title: str | None = None
     issuing_authority: str
     jurisdiction: str = "VN"
     signer: Signer
     promulgation_date: date
     effective_date: date
-    expiration_date: Optional[date] = None
+    expiration_date: date | None = None
     status: LegalStatus = LegalStatus.ACTIVE
-    legal_domain: List[str] = Field(default_factory=list)
-    gazette: Optional[GazetteMetadata] = None
-    checksum_sha256: Optional[str] = None
+    legal_domain: list[str] = Field(default_factory=list)
+    gazette: GazetteMetadata | None = None
+    checksum_sha256: str | None = None
     source: SourceMetadata
-    preamble: Optional[Preamble] = None
+    preamble: Preamble | None = None
     body: LegalDocumentBody
 
 
@@ -118,7 +118,7 @@ class LegalChunkMetadata(BaseModel):
     chapter: str
     article: int
     status: str
-    tags: List[str] = Field(default_factory=list)
+    tags: list[str] = Field(default_factory=list)
 
 
 class LegalChunk(BaseModel):
@@ -137,4 +137,4 @@ class LegalCorpusChunks(BaseModel):
     chunk_strategy: str
     total_chunks: int
     generated_at: datetime
-    chunks: List[LegalChunk]
+    chunks: list[LegalChunk]

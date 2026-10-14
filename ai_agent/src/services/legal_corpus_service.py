@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from src.models.legal_document import Article, LegalChunk, LegalCorpusChunks, LegalDocument
 
@@ -8,7 +7,7 @@ from src.models.legal_document import Article, LegalChunk, LegalCorpusChunks, Le
 class LegalCorpusService:
     """Service doanh nghiệp để nạp, tra cứu và xử lý Corpus văn bản pháp luật."""
 
-    def __init__(self, data_root: Optional[Path] = None):
+    def __init__(self, data_root: Path | None = None):
         if data_root is None:
             # Mặc định trỏ về ai_agent/data
             self.data_root = Path(__file__).resolve().parent.parent.parent / "data"
@@ -24,20 +23,20 @@ class LegalCorpusService:
         if not file_path.exists():
             raise FileNotFoundError(f"Không tìm thấy tài liệu tại: {file_path}")
 
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             data = json.load(f)
 
         return LegalDocument.model_validate(data)
 
-    def load_all_documents(self) -> List[LegalDocument]:
+    def load_all_documents(self) -> list[LegalDocument]:
         """Tải toàn bộ văn bản pháp luật trong kho processed corpus."""
-        documents: List[LegalDocument] = []
+        documents: list[LegalDocument] = []
         if not self.processed_dir.exists():
             return documents
 
         for json_path in self.processed_dir.glob("*/*.json"):
             try:
-                with open(json_path, "r", encoding="utf-8") as f:
+                with open(json_path, encoding="utf-8") as f:
                     data = json.load(f)
                 documents.append(LegalDocument.model_validate(data))
             except Exception as e:
@@ -50,20 +49,20 @@ class LegalCorpusService:
         if not file_path.exists():
             raise FileNotFoundError(f"Không tìm thấy file chunks tại: {file_path}")
 
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             data = json.load(f)
 
         return LegalCorpusChunks.model_validate(data)
 
-    def load_all_chunks(self) -> List[LegalChunk]:
+    def load_all_chunks(self) -> list[LegalChunk]:
         """Tải toàn bộ các chunk pháp luật để phục vụ Embedding & Vector Search."""
-        all_chunks: List[LegalChunk] = []
+        all_chunks: list[LegalChunk] = []
         if not self.embeddings_dir.exists():
             return all_chunks
 
         for json_path in self.embeddings_dir.glob("*/*chunks.json"):
             try:
-                with open(json_path, "r", encoding="utf-8") as f:
+                with open(json_path, encoding="utf-8") as f:
                     data = json.load(f)
                 corpus = LegalCorpusChunks.model_validate(data)
                 all_chunks.extend(corpus.chunks)
@@ -71,7 +70,7 @@ class LegalCorpusService:
                 print(f"Bỏ qua file chunks {json_path}: {e}")
         return all_chunks
 
-    def find_article_by_number(self, document: LegalDocument, article_number: int) -> Optional[Article]:
+    def find_article_by_number(self, document: LegalDocument, article_number: int) -> Article | None:
         """Tra cứu nhanh một Điều theo số Điều trong một văn bản."""
         for chapter in document.body.chapters:
             # Kiểm tra trong các articles trực tiếp của chapter
@@ -86,12 +85,12 @@ class LegalCorpusService:
                             return article
         return None
 
-    def search_articles_by_keyword(self, document: LegalDocument, keyword: str) -> List[Article]:
+    def search_articles_by_keyword(self, document: LegalDocument, keyword: str) -> list[Article]:
         """Tìm kiếm các Điều có chứa từ khóa hoặc tag liên quan."""
         keyword_lower = keyword.lower()
-        results: List[Article] = []
+        results: list[Article] = []
 
-        all_articles: List[Article] = []
+        all_articles: list[Article] = []
         for chapter in document.body.chapters:
             all_articles.extend(chapter.articles)
             if chapter.sections:
