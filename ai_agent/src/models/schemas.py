@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel, Field
 
 
@@ -8,3 +9,5 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str = Field(..., description="Phản hồi từ agent")
     analysis: str = Field(default="", description="Phân tích nội bộ")
+    citations: List[str] = Field(default_factory=list, description="Danh sách căn cứ pháp lý viện dẫn")
+    has_grounding: bool = Field(default=True, description="Đánh dấu câu trả lời có đủ căn cứ pháp lý hay bị từ chối")
