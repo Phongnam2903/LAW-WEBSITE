@@ -5,24 +5,33 @@ from typing import Any
 
 import httpx
 
+from src.config import get_settings
 from src.models.legal_document import LegalChunk
 from src.services.legal_corpus_service import LegalCorpusService
 
 
 class LegalRAGService:
-    """Service thực hiện RAG pháp luật với nomic-embed-text và llama3.1 qua Ollama local."""
+    """Service thực hiện RAG pháp luật hỗ trợ Hybrid (Ollama Local & Google Gemini Flash)."""
 
     def __init__(
         self,
-        ollama_base_url: str = "http://localhost:11434",
-        embed_model: str = "nomic-embed-text:latest",
-        llm_model: str = "llama3.1:latest",
+        llm_provider: str | None = None,
+        gemini_api_key: str | None = None,
+        gemini_model: str | None = None,
+        ollama_base_url: str | None = None,
+        embed_model: str | None = None,
+        llm_model: str | None = None,
         similarity_threshold: float = 0.48,
         data_root: Path | None = None,
     ):
-        self.ollama_base_url = ollama_base_url
-        self.embed_model = embed_model
-        self.llm_model = llm_model
+        settings = get_settings()
+        self.llm_provider = llm_provider or settings.llm_provider
+        self.gemini_api_key = gemini_api_key if gemini_api_key is not None else settings.gemini_api_key
+        self.gemini_model = gemini_model or settings.gemini_model
+
+        self.ollama_base_url = ollama_base_url or settings.ollama_base_url
+        self.embed_model = embed_model or settings.ollama_embed_model
+        self.llm_model = llm_model or settings.ollama_model
         self.similarity_threshold = similarity_threshold
 
         self.corpus_service = LegalCorpusService(data_root=data_root)
@@ -184,10 +193,107 @@ class LegalRAGService:
             "Hãy trả lời tuân thủ nghiêm ngặt các quy tắc trên."
         )
 
+        full_prompt = f"{system_prompt}\n\n{user_prompt}"
+
+        # Xác định provider và thực thi suy luận (Hybrid: Gemini Flash siêu tốc hoặc Ollama Local)
+        try:
+            if self.llm_provider == "gemini" and self.gemini_api_key:
+                raw_response, used_model = self._generate_with_gemini(full_prompt)
+                provider_used = f"Google Gemini Flash ({used_model})"
+            else:
+                raw_response = self._generate_with_ollama(full_prompt)
+                provider_used = f"Ollama Local ({self.llm_model})"
+
+            return {
+                "response": raw_response,
+                "citations": citations_list,
+                "has_grounding": True,
+                "analysis": f"Truy xuất thành công {len(retrieved)} căn cứ pháp lý. Suy luận hoàn tất qua {provider_used}.",
+                "sources": sources_list,
+            }
+        except Exception as e:
+            # Nếu Gemini gặp sự cố (mạng, quota), tự động fallback sang Ollama
+            if self.llm_provider == "gemini" and self.gemini_api_key:
+                try:
+                    fallback_response = self._generate_with_ollama(full_prompt)
+                    return {
+                        "response": fallback_response,
+                        "citations": citations_list,
+                        "has_grounding": True,
+                        "analysis": f"Gemini gặp sự cố ({e}), đã fallback thành công sang Ollama Local ({self.llm_model}).",
+                        "sources": sources_list,
+                    }
+                except Exception as fallback_e:
+                    err_msg = f"Lỗi Gemini: {e} | Lỗi Fallback Ollama: {fallback_e}"
+            else:
+                err_msg = str(e)
+
+            return {
+                "response": f"Lỗi trong quá trình suy luận pháp lý qua LLM: {err_msg}",
+                "citations": citations_list,
+                "has_grounding": False,
+                "analysis": f"LLM error: {err_msg}",
+                "sources": sources_list,
+            }
+
+    def _generate_with_gemini(self, prompt: str) -> tuple[str, str]:
+        """Sinh phản hồi siêu tốc qua Google Gemini Flash API (1-2s).
+
+        Tự động fallback giữa các phiên bản Flash khả dụng (3.5-flash-lite, 2.5-flash) nếu gặp 404 hoặc 503.
+        """
+        if not self.gemini_api_key:
+            raise ValueError(
+                "Chưa cấu hình GEMINI_API_KEY trong file .env. Vui lòng cung cấp API key để sử dụng Gemini Flash."
+            )
+
+        candidate_models = [self.gemini_model, "gemini-3.5-flash-lite", "gemini-2.5-flash", "gemini-flash-latest"]
+        unique_models: list[str] = []
+        for m in candidate_models:
+            if m not in unique_models:
+                unique_models.append(m)
+
+        last_error = "Không có model nào phản hồi"
+        for model in unique_models:
+            url = (
+                f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+                f"?key={self.gemini_api_key}"
+            )
+            payload = {
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {
+                    "temperature": 0.1,
+                    "topP": 0.9,
+                    "maxOutputTokens": 800,
+                },
+            }
+            try:
+                with httpx.Client(timeout=25.0) as client:
+                    resp = client.post(url, json=payload)
+                    if resp.status_code != 200:
+                        last_error = f"Model {model} returned status {resp.status_code}: {resp.text[:120]}"
+                        continue
+                    data = resp.json()
+                    candidates = data.get("candidates", [])
+                    if not candidates:
+                        continue
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    if not parts:
+                        continue
+                    text = parts[0].get("text", "").strip()
+                    if text:
+                        return text, model
+            except Exception as e:
+                last_error = str(e)
+                continue
+
+        raise RuntimeError(f"Tất cả model Gemini đều không phản hồi thành công: {last_error}")
+
+    def _generate_with_ollama(self, prompt: str) -> str:
+        """Sinh phản hồi qua Ollama Local (chế độ On-Premise offline)."""
         llm_url = f"{self.ollama_base_url}/api/generate"
         payload = {
             "model": self.llm_model,
-            "prompt": f"{system_prompt}\n\n{user_prompt}",
+            "prompt": prompt,
             "stream": False,
             "options": {
                 "temperature": 0.1,
@@ -195,26 +301,8 @@ class LegalRAGService:
                 "num_predict": 512,
             },
         }
-
-        try:
-            with httpx.Client(timeout=300.0) as client:
-                resp = client.post(llm_url, json=payload)
-                resp.raise_for_status()
-                data = resp.json()
-                raw_response = data.get("response", "").strip()
-
-            return {
-                "response": raw_response,
-                "citations": citations_list,
-                "has_grounding": True,
-                "analysis": f"Truy xuất thành công {len(retrieved)} căn cứ pháp lý liên quan từ kho dữ liệu.",
-                "sources": sources_list,
-            }
-        except Exception as e:
-            return {
-                "response": f"Lỗi trong quá trình suy luận pháp lý qua LLM: {str(e)}",
-                "citations": citations_list,
-                "has_grounding": False,
-                "analysis": f"LLM error: {str(e)}",
-                "sources": sources_list,
-            }
+        with httpx.Client(timeout=300.0) as client:
+            resp = client.post(llm_url, json=payload)
+            resp.raise_for_status()
+            data = resp.json()
+            return data.get("response", "").strip()

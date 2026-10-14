@@ -20,10 +20,20 @@ class Settings(BaseSettings):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     cors_origins: str = "http://localhost:3000"
 
-    # LLM
+    # LLM Settings
+    llm_provider: Literal["gemini", "ollama", "openai"] = "gemini"
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-3.5-flash-lite"
+
+    # Ollama Settings
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3.1:latest"
+    ollama_embed_model: str = "nomic-embed-text:latest"
+
+    # OpenAI (tùy chọn)
     openai_api_key: str = ""
     model_name: str = "gpt-4o-mini"
-    llm_temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+    llm_temperature: float = Field(default=0.1, ge=0.0, le=2.0)
 
     # Database
     database_url: str = "sqlite:///./data/app.db"

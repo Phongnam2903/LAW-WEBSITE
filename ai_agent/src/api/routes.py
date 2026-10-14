@@ -24,10 +24,16 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
 @router.get("/status")
 async def agent_status():
-    """Kiểm tra trạng thái agent."""
+    """Kiểm tra trạng thái agent và mô hình suy luận đang hoạt động."""
+    from src.config import get_settings
+
+    settings = get_settings()
+    active_provider = "gemini" if (settings.llm_provider == "gemini" and settings.gemini_api_key) else "ollama"
     return {
         "status": "ready",
         "agent": "Legal RAG Agent v1.0",
-        "embed_model": "nomic-embed-text:latest",
-        "llm_model": "llama3.1:latest",
+        "provider": active_provider,
+        "llm_model": settings.gemini_model if active_provider == "gemini" else settings.ollama_model,
+        "embed_model": settings.ollama_embed_model,
+        "gemini_configured": bool(settings.gemini_api_key),
     }
