@@ -17,6 +17,8 @@ async def chat(request: ChatRequest) -> ChatResponse:
             analysis=result.get("analysis", ""),
             citations=metadata.get("citations", []),
             has_grounding=metadata.get("has_grounding", True),
+            intent=result.get("intent") or metadata.get("intent"),
+            action=metadata.get("action"),
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

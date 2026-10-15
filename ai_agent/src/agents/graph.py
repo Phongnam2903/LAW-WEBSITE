@@ -14,7 +14,7 @@ def route_by_intent(state: AgentState) -> str:
     if state.get("error"):
         return END
     intent = state.get("intent", "legal_query")
-    if intent in ("greeting", "gratitude", "farewell", "bot_info"):
+    if intent in ("greeting", "gratitude", "farewell", "bot_info", "consultation_booking"):
         return "greeting"
     return "analyze"
 

@@ -36,22 +36,40 @@ async def greeting_node(state: AgentState) -> dict:
             "Tạm biệt Quý khách! Chúc Quý khách một ngày làm việc hiệu quả và thuận lợi. "
             "Khi cần tư vấn hoặc tra cứu pháp luật, tôi luôn sẵn sàng hỗ trợ Quý khách!"
         )
+    elif intent == "consultation_booking":
+        response_text = (
+            "Quý khách có thể kết nối và đặt lịch làm việc trực tiếp với Đội ngũ Luật sư của "
+            "**Công ty Luật Hợp danh Nghiệp Hưng** qua các phương thức sau:\n\n"
+            "1. 📅 **Đặt lịch trực tuyến:** Điền thông tin vụ việc và chọn khung giờ tại trang [Đặt Lịch Tư Vấn](/consultation) "
+            "(hỗ trợ tư vấn trực tiếp tại trụ sở văn phòng hoặc qua video call bảo mật).\n"
+            "2. 📞 **Tổng đài Hotline 24/7:** `1900 1234` hoặc `(028) 3822 9999`.\n"
+            "3. 🏢 **Trụ sở chính:** Tầng 18, Tòa nhà Nghiệp Hưng, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh.\n\n"
+            "Thư ký luật sư sẽ chủ động liên hệ xác nhận và bố trí luật sư chuyên trách phù hợp nhất trong vòng 30 phút làm việc."
+        )
     elif intent == "bot_info":
         response_text = (
             "Tôi là **Trợ lý Pháp lý AI** của **Công ty Luật Hợp danh Nghiệp Hưng**, chuyên sâu về Pháp luật Việt Nam.\n\n"
             "Chức năng chính của tôi:\n"
-            "- Tra cứu chính xác các điều khoản trong **Luật Doanh nghiệp 2020** và **Bộ luật Lao động 2019**.\n"
-            "- Giải đáp các tình huống pháp lý có căn cứ, trích dẫn rõ số hiệu, điều khoản và ngày hiệu lực.\n"
-            "- Kiểm soát tính chính xác, không tự suy đoán hoặc đưa ra thông tin không có cơ sở pháp lý.\n\n"
-            "Quý khách đang quan tâm đến nội dung pháp lý nào ạ?"
+            "- Tra cứu và đối chiếu chính xác các điều khoản trong hệ thống pháp luật Việt Nam hiện hành:\n"
+            "  + 🏡 **Luật Đất đai 2024**: Cấp sổ đỏ, chuyển nhượng, thu hồi - bồi thường, tranh chấp ranh giới.\n"
+            "  + 📜 **Bộ luật Dân sự 2015**: Hợp đồng, đặt cọc, vay mượn, lãi suất, thừa kế di chúc & theo pháp luật.\n"
+            "  + 💍 **Luật Hôn nhân & Gia đình 2014**: Thuận tình / đơn phương ly hôn, quyền nuôi con, phân chia tài sản chung.\n"
+            "  + 🏢 **Luật Doanh nghiệp 2020**: Thành lập, cơ cấu quản trị, vốn điều lệ, người đại diện theo pháp luật.\n"
+            "  + ⚖️ **Bộ luật Lao động 2019**: Hợp đồng lao động, thời hạn báo trước, chấm dứt HĐLĐ, sa thải, trợ cấp.\n"
+            "- Trích dẫn căn cứ điều luật nguyên văn, không tự suy đoán hoặc đưa ra thông tin không có cơ sở pháp lý.\n"
+            "- Hướng dẫn quy trình và hỗ trợ kết nối trực tiếp với Luật sư Nghiệp Hưng khi vụ việc phức tạp.\n\n"
+            "Quý khách đang quan tâm đến nội dung hoặc tình huống pháp lý nào ạ?"
         )
     else:  # greeting
         response_text = (
             "Xin chào Quý khách! Tôi là **Trợ lý Pháp lý AI** của **Công ty Luật Hợp danh Nghiệp Hưng**.\n\n"
-            "Tôi có thể hỗ trợ Quý khách tra cứu và giải đáp các quy định pháp lý liên quan đến:\n"
-            "- 🏢 **Luật Doanh nghiệp 2020**: Thành lập doanh nghiệp, góp vốn, người đại diện theo pháp luật, quyền & nghĩa vụ...\n"
-            "- ⚖️ **Bộ luật Lao động 2019**: Hợp đồng lao động, thời hạn báo trước, tiền lương, kỷ luật, chấm dứt hợp đồng...\n\n"
-            "Quý khách đang cần tôi hỗ trợ hoặc giải đáp thông tin pháp luật nào ạ?"
+            "Tôi luôn sẵn sàng hỗ trợ Quý khách tra cứu và giải đáp các quy định pháp luật liên quan đến:\n"
+            "- 🏡 **Đất đai & Bất động sản**: Cấp sổ đỏ có/không có giấy tờ, hợp đồng mua bán, tranh chấp đất đai, bồi thường.\n"
+            "- 💍 **Hôn nhân & Gia đình**: Thủ tục ly hôn thuận tình/đơn phương, quyền trực tiếp nuôi con, phân chia tài sản chung/riêng.\n"
+            "- 📜 **Dân sự & Hợp đồng**: Hợp đồng đặt cọc, phạt cọc, vay nợ, phân chia di sản thừa kế theo di chúc/pháp luật.\n"
+            "- 🏢 **Doanh nghiệp**: Thành lập công ty, góp vốn, giải thể, quản trị nội bộ.\n"
+            "- ⚖️ **Lao động**: Hợp đồng lao động, thời hạn báo trước, bồi thường khi đơn phương chấm dứt hợp đồng.\n\n"
+            "Quý khách đang cần tôi hỗ trợ hoặc giải đáp vấn đề pháp lý nào hôm nay ạ?"
         )
 
     return {
@@ -61,6 +79,11 @@ async def greeting_node(state: AgentState) -> dict:
             "has_grounding": True,
             "citations": [],
             "intent": intent,
+            "action": (
+                {"label": "Chuyển đến trang Đặt lịch tư vấn", "href": "/consultation"}
+                if intent == "consultation_booking"
+                else None
+            ),
         },
     }
 

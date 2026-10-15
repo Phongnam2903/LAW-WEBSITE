@@ -183,8 +183,8 @@ class LegalRAGService:
             "(Chỉ rõ tên văn bản luật, số hiệu, Điều, Khoản, Điểm liên quan)\n\n"
             "### 3. Đoạn trích dẫn nguyên văn:\n"
             "(Trích dẫn chính xác nguyên văn quy định từ ngữ trong điều luật)\n\n"
-            "### 4. Nguồn kiểm chứng:\n"
-            "(Ghi rõ nguồn: Cổng Thông tin điện tử Chính phủ / Cơ sở dữ liệu quốc gia về văn bản pháp luật, ngày ban hành và ngày có hiệu lực)\n"
+            "### 4. Khuyến nghị từ Luật Nghiệp Hưng:\n"
+            "(Lưu ý rủi ro pháp lý thực tế, các giấy tờ/chứng cứ cần lưu trữ hoặc chuẩn bị, và đề xuất đặt lịch làm việc với luật sư nếu vụ việc phức tạp hoặc có nguy cơ tranh chấp)\n"
         )
 
         user_prompt = (
@@ -204,24 +204,32 @@ class LegalRAGService:
                 raw_response = self._generate_with_ollama(full_prompt)
                 provider_used = f"Ollama Local ({self.llm_model})"
 
+            is_grounded = "không tìm thấy quy định phù hợp" not in raw_response
+            effective_citations = citations_list if is_grounded else []
+
             return {
                 "response": raw_response,
-                "citations": citations_list,
-                "has_grounding": True,
-                "analysis": f"Truy xuất thành công {len(retrieved)} căn cứ pháp lý. Suy luận hoàn tất qua {provider_used}.",
-                "sources": sources_list,
+                "citations": effective_citations,
+                "has_grounding": is_grounded,
+                "analysis": (
+                    f"Truy xuất thành công {len(retrieved)} căn cứ pháp lý. Suy luận hoàn tất qua {provider_used}."
+                    if is_grounded
+                    else f"LLM nhận diện {len(retrieved)} đoạn trích không đủ cơ sở để trả lời. Đã đưa ra thông báo từ chối suy đoán."
+                ),
+                "sources": sources_list if is_grounded else [],
             }
         except Exception as e:
             # Nếu Gemini gặp sự cố (mạng, quota), tự động fallback sang Ollama
             if self.llm_provider == "gemini" and self.gemini_api_key:
                 try:
                     fallback_response = self._generate_with_ollama(full_prompt)
+                    is_fallback_grounded = "không tìm thấy quy định phù hợp" not in fallback_response
                     return {
                         "response": fallback_response,
-                        "citations": citations_list,
-                        "has_grounding": True,
+                        "citations": citations_list if is_fallback_grounded else [],
+                        "has_grounding": is_fallback_grounded,
                         "analysis": f"Gemini gặp sự cố ({e}), đã fallback thành công sang Ollama Local ({self.llm_model}).",
-                        "sources": sources_list,
+                        "sources": sources_list if is_fallback_grounded else [],
                     }
                 except Exception as fallback_e:
                     err_msg = f"Lỗi Gemini: {e} | Lỗi Fallback Ollama: {fallback_e}"

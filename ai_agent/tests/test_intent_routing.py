@@ -19,6 +19,8 @@ async def run_tests():
         ("xin chào", "greeting", 0),
         ("cảm ơn bạn", "gratitude", 0),
         ("bạn là ai", "bot_info", 0),
+        ("tôi muốn đặt lịch gặp luật sư tư vấn", "consultation_booking", 0),
+        ("địa chỉ văn phòng công ty luật ở đâu", "consultation_booking", 0),
     ]
 
     print("=== BẮT ĐẦU KIỂM THỬ ĐỊNH TUYẾN Ý ĐỊNH (INTENT ROUTING) ===")

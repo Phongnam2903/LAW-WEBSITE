@@ -30,25 +30,25 @@ Hệ thống AI Trợ lý Pháp lý phục vụ trực tiếp cho **khách hàng
 ---
 
 ### 📌 Giai Đoạn 1: Mở Rộng Dữ Liệu Pháp Luật & Hoàn Thiện "Bộ Não" RAG
-- [ ] **1.1. Bổ sung dữ liệu văn bản pháp luật thiết yếu cho khách hàng:**
+- [x] **1.1. Bổ sung dữ liệu văn bản pháp luật thiết yếu cho khách hàng:**
   - [x] *Đã có:* Luật Doanh nghiệp 2020 (Số 59/2020/QH14)
   - [x] *Đã có:* Bộ luật Lao động 2019 (Số 45/2019/QH14)
-  - [ ] *Bổ sung:* **Luật Đất đai 2024 (Số 31/2024/QH15)** — cấp sổ đỏ, tranh chấp đất đai, bồi thường, chuyển nhượng.
-  - [ ] *Bổ sung:* **Bộ luật Dân sự 2015 (Số 91/2015/QH14)** — giao dịch dân sự, hợp đồng, thừa kế, bồi thường thiệt hại.
-  - [ ] *Bổ sung:* **Luật Hôn nhân và Gia đình 2014 (Số 52/2014/QH13)** — ly hôn thuận tình/đơn phương, quyền nuôi con, phân chia tài sản chung.
-- [ ] **1.2. Xử lý dữ liệu & Index Vector Embeddings:**
-  - [ ] Chuẩn hóa văn bản thành cấu trúc JSON chunking theo Điều/Khoản (`legal_document.py`).
-  - [ ] Tạo vector embeddings (`nomic-embed-text`) và cập nhật bộ nhớ cache `vector_index_cache.json`.
-- [ ] **1.3. Nâng cấp nhận diện Ý định (Intent Classification):**
-  - [ ] Mở rộng `intent.py` nhận diện chính xác các nhóm câu hỏi: Doanh nghiệp, Lao động, Đất đai, Dân sự, Hôn nhân gia đình, Chi phí & Thủ tục luật sư.
-  - [ ] Bổ sung ý định "cần gặp luật sư / đặt lịch tư vấn" để chủ động kích hoạt Call-To-Action.
-- [ ] **1.4. Tối ưu hóa Persona & System Prompt:**
-  - [ ] Chuẩn hóa giọng văn: Thân thiện, chuẩn mực, dễ hiểu đối với người dân và chủ doanh nghiệp.
-  - [ ] Cấu trúc câu trả lời 4 phần:
+  - [x] *Bổ sung:* **Luật Đất đai 2024 (Số 31/2024/QH15)** — cấp sổ đỏ, tranh chấp đất đai, bồi thường, chuyển nhượng.
+  - [x] *Bổ sung:* **Bộ luật Dân sự 2015 (Số 91/2015/QH14)** — giao dịch dân sự, hợp đồng, thừa kế, bồi thường thiệt hại, đặt cọc, lãi suất.
+  - [x] *Bổ sung:* **Luật Hôn nhân và Gia đình 2014 (Số 52/2014/QH13)** — ly hôn thuận tình/đơn phương, quyền nuôi con, phân chia tài sản chung.
+- [x] **1.2. Xử lý dữ liệu & Index Vector Embeddings:**
+  - [x] Chuẩn hóa văn bản thành cấu trúc JSON chunking theo Điều/Khoản (`legal_document.py`) với tổng cộng 36 chunks chất lượng cao.
+  - [x] Tạo vector embeddings (`nomic-embed-text`) và cập nhật bộ nhớ cache `vector_index_cache.json`.
+- [x] **1.3. Nâng cấp nhận diện Ý định (Intent Classification):**
+  - [x] Mở rộng `intent.py` nhận diện chính xác các nhóm câu hỏi: Doanh nghiệp, Lao động, Đất đai, Dân sự, Hôn nhân gia đình.
+  - [x] Bổ sung ý định `"consultation_booking"` để tự động nhận diện nhu cầu gặp luật sư / hỏi hotline / địa chỉ văn phòng.
+- [x] **1.4. Tối ưu hóa Persona & System Prompt:**
+  - [x] Chuẩn hóa giọng văn đại diện cho Công ty Luật Hợp danh Nghiệp Hưng: Thân thiện, chuẩn mực, dễ hiểu đối với người dân và chủ doanh nghiệp.
+  - [x] Cấu trúc câu trả lời 4 phần:
     1. *Kết luận & Hướng dẫn trực diện*
     2. *Căn cứ điều luật áp dụng*
     3. *Đoạn trích dẫn nguyên văn*
-    4. *Khuyến nghị & Cảnh báo từ Luật Nghiệp Hưng*
+    4. *Khuyến nghị & Cảnh báo từ Luật Nghiệp Hưng (kèm hướng dẫn đặt lịch nếu phức tạp)*
 
 ---
 
@@ -144,4 +144,5 @@ Hệ thống AI Trợ lý Pháp lý phục vụ trực tiếp cho **khách hàng
 | Ngày | Giai đoạn | Nội dung đã hoàn thành | Người thực hiện |
 | :--- | :--- | :--- | :--- |
 | **2026-10-14** | Giai đoạn 0 | Tạo nhánh `feature/ai_agent_customer`. Đồng bộ tên "Công ty Luật Hợp danh Nghiệp Hưng" toàn hệ thống. Sửa lỗi CI lint. Tích hợp Gemini 3.5 Flash-lite. Khởi tạo tài liệu kế hoạch chi tiết. | Pair Programming |
-| *Tiếp theo* | Giai đoạn 2 & 1 | Xây dựng Route Handler Proxy `/api/agent/chat` và đấu nối trực tiếp Widget + Trang `/chat` vào API thật. | Pair Programming |
+| **2026-10-14** | Giai đoạn 1 | Mở rộng kho RAG sang **5 lĩnh vực pháp luật** (Đất đai 2024, Dân sự 2015, Hôn nhân 2014, Doanh nghiệp 2020, Lao động 2019) với 36 chunks. Cập nhật vector embeddings cache. Nâng cấp nhận diện ý định `consultation_booking` & tối ưu Persona phản hồi 4 phần. | Pair Programming |
+| *Tiếp theo* | Giai đoạn 2 | Xây dựng Next.js Route Handler `/api/agent/chat` và đấu nối thực tế Widget nổi + Trang `/chat` vào API thật. | Pair Programming |
