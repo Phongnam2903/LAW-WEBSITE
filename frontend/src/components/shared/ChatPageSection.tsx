@@ -18,12 +18,13 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import type { ChatMessage } from "@/types/chat";
 import {
-  type ChatMessage,
   QUICK_PROMPTS,
   LEGAL_CATEGORIES,
   generateBotResponse,
 } from "@/lib/chatbot-data";
+import { sendChatMessage } from "@/services/chat-service";
 
 interface ChatSession {
   id: string;
@@ -103,7 +104,7 @@ export function ChatPageSection() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  function handleSend(promptText?: string) {
+  async function handleSend(promptText?: string) {
     const query = (promptText || input).trim();
     if (!query || isTyping) return;
 
@@ -131,21 +132,51 @@ export function ChatPageSection() {
       ]);
     }
 
-    setTimeout(() => {
-      const response = generateBotResponse(query);
+    try {
+      const data = await sendChatMessage(query);
       const botMessage: ChatMessage = {
         id: createMessageId("bot"),
         sender: "bot",
-        text: response.text,
+        text: data.response,
         timestamp: getCurrentTimeString(),
-        citations: response.citations,
-        suggestions: response.suggestions,
-        action: response.action,
+        citations: data.citations && data.citations.length > 0 ? data.citations : undefined,
+        action:
+          data.action ??
+          (!data.has_grounding
+            ? {
+                label: "Đặt lịch tư vấn với Luật sư về vụ việc này",
+                href: `/consultation?notes=${encodeURIComponent(query)}`,
+              }
+            : null),
+        has_grounding: data.has_grounding,
+        analysis: data.analysis,
+        intent: data.intent,
       };
 
       setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error("Lỗi gửi câu hỏi chat page:", error);
+      const fallback = generateBotResponse(query);
+      const botMessage: ChatMessage = {
+        id: createMessageId("bot-fallback"),
+        sender: "bot",
+        text:
+          fallback.text ||
+          "Hệ thống AI của Công ty Luật Hợp danh Nghiệp Hưng hiện đang bận hoặc gián đoạn kết nối. Quý khách vui lòng gọi Hotline 1900 1234 hoặc đặt lịch hẹn trực tiếp với Luật sư để được hỗ trợ tức thì.",
+        timestamp: getCurrentTimeString(),
+        citations: fallback.citations,
+        suggestions: fallback.suggestions,
+        action: fallback.action || {
+          label: "Đặt lịch tư vấn với Luật sư về vụ việc này",
+          href: `/consultation?notes=${encodeURIComponent(query)}`,
+        },
+        has_grounding: false,
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1200);
+    }
   }
 
   function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -458,17 +489,56 @@ export function ChatPageSection() {
                       </div>
                     )}
 
+                    {/* Analysis Box */}
+                    {msg.analysis && (
+                      <div className="mt-3 rounded-xl bg-gold-600/10 p-3 text-xs text-charcoal-700 border border-gold-600/30">
+                        <p className="font-semibold text-navy-900 mb-1 flex items-center gap-1.5">
+                          <Sparkles className="h-3.5 w-3.5 text-gold-600" />
+                          Phân tích hệ thống AI & Phạm vi tra cứu:
+                        </p>
+                        <p className="text-[12px] text-charcoal-700 leading-relaxed italic">{msg.analysis}</p>
+                      </div>
+                    )}
+
+                    {/* Grounding Advisory */}
+                    {msg.sender === "bot" && msg.has_grounding === false && msg.id !== "welcome-main" && (
+                      <div className="mt-3 flex items-start gap-2 rounded-xl bg-amber-500/10 p-3 text-xs text-amber-900 border border-amber-500/30">
+                        <span className="font-bold text-amber-800 shrink-0">⚠️ Khuyến nghị từ Luật Nghiệp Hưng:</span>
+                        <span>
+                          Vụ việc này có tính chất chuyên biệt hoặc cần đối chiếu các tài liệu/hợp đồng gốc. Quý khách nên đặt lịch hẹn làm việc trực tiếp với luật sư chuyên trách để được thẩm định chuyên sâu.
+                        </span>
+                      </div>
+                    )}
+
                     {/* Action button linking to legal consultation */}
-                    {msg.action && (
-                      <div className="mt-4 pt-3 border-t border-neutral-200/80">
+                    {msg.sender === "bot" && msg.id !== "welcome-main" && (
+                      <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-neutral-200/80">
                         <Link
-                          href={msg.action.href}
-                          className="inline-flex items-center gap-2 rounded-pill bg-navy-900 px-5 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-navy-700 shadow-xs"
+                          href={msg.action ? msg.action.href : `/consultation?notes=${encodeURIComponent(msg.text.slice(0, 150))}`}
+                          className="inline-flex items-center gap-2 rounded-pill bg-navy-900 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-navy-700 shadow-xs"
                         >
-                          <Calendar className="h-4 w-4 text-gold-600" />
-                          {msg.action.label}
+                          <Calendar className="h-3.5 w-3.5 text-gold-600" />
+                          {msg.action ? msg.action.label : "Đặt lịch Luật sư tư vấn vụ việc này"}
                           <ChevronRight className="h-3.5 w-3.5" />
                         </Link>
+
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(msg.id, msg.text)}
+                          className="inline-flex items-center gap-1.5 rounded-pill border border-neutral-300 bg-white px-3 py-2 text-xs font-medium text-charcoal-700 hover:bg-neutral-50 transition-colors"
+                        >
+                          {copiedId === msg.id ? (
+                            <>
+                              <Check className="h-3.5 w-3.5 text-emerald-600" />
+                              <span className="text-emerald-600 font-semibold">Đã sao chép</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3.5 w-3.5 text-charcoal-600" />
+                              <span>Sao chép câu trả lời</span>
+                            </>
+                          )}
+                        </button>
                       </div>
                     )}
                   </div>

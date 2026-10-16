@@ -144,7 +144,17 @@ async def respond_node(state: AgentState) -> dict:
         }
 
     rag_result = _rag_service.generate_answer(query)
-    merged_metadata = {**metadata, "citations": rag_result.get("citations", [])}
+    is_grounded = rag_result.get("has_grounding", True)
+    merged_metadata = {
+        **metadata,
+        "citations": rag_result.get("citations", []),
+        "has_grounding": is_grounded,
+        "action": (
+            metadata.get("action")
+            if is_grounded
+            else {"label": "Đặt lịch tư vấn với Luật sư", "href": "/consultation"}
+        ),
+    }
 
     return {
         "response": rag_result.get("response", ""),

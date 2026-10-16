@@ -53,18 +53,18 @@ Hệ thống AI Trợ lý Pháp lý phục vụ trực tiếp cho **khách hàng
 ---
 
 ### 📌 Giai Đoạn 2: Tích Hợp Kết Nối Trực Tiếp Frontend $\leftrightarrow$ Backend AI Agent
-- [ ] **2.1. Xây dựng Next.js Route Handler / BFF:**
-  - [ ] Tạo endpoint `frontend/src/app/api/agent/chat/route.ts` đóng vai trò proxy bảo mật kết nối với FastAPI `http://localhost:8000/api/v1/chat`.
-  - [ ] Bổ sung biến môi trường `AI_AGENT_URL` vào cấu hình Next.js (`env.ts`).
-  - [ ] Xử lý timeout, error handling và fallback thông minh nếu dịch vụ AI đang khởi động lại.
-- [ ] **2.2. Đấu nối thực tế vào ChatbotWidget (Widget nổi ở góc màn hình):**
-  - [ ] Thay thế hàm giả lập `setTimeout` + `chatbot-data.ts` bằng lệnh gọi API `/api/agent/chat`.
-  - [ ] Hiển thị trạng thái "Đang tra cứu cơ sở pháp lý..." sinh động.
-  - [ ] Hiển thị danh sách căn cứ pháp lý (Citations tags) chính xác trả về từ AI.
-- [ ] **2.3. Đấu nối thực tế vào ChatPageSection (Trang /chat chuyên sâu):**
-  - [ ] Kết nối toàn diện giao diện `/chat` với API backend AI Agent.
-  - [ ] Hiển thị phân tích nội bộ (Analysis metadata) và nguồn luật đã đối chiếu.
-  - [ ] Thêm nút thao tác nhanh: Sao chép câu trả lời, Đặt lịch tư vấn từ câu trả lời này.
+- [x] **2.1. Xây dựng Next.js Route Handler / BFF:**
+  - [x] Tạo endpoint `frontend/src/app/api/agent/chat/route.ts` đóng vai trò proxy bảo mật kết nối với FastAPI `http://localhost:8000/api/v1/chat`.
+  - [x] Bổ sung biến môi trường `AI_AGENT_URL` vào cấu hình Next.js (`env.ts`).
+  - [x] Xử lý timeout (35s), error handling và fallback thông minh nếu dịch vụ AI đang khởi động lại.
+- [x] **2.2. Đấu nối thực tế vào ChatbotWidget (Widget nổi ở góc màn hình):**
+  - [x] Thay thế hàm giả lập `setTimeout` + `chatbot-data.ts` bằng lệnh gọi API `/api/agent/chat` qua `sendChatMessage`.
+  - [x] Hiển thị trạng thái "Đang tra cứu cơ sở pháp lý..." sinh động khi AI đang suy luận.
+  - [x] Hiển thị danh sách căn cứ pháp lý (Citations tags) và cảnh báo thẩm định khi ngoài cơ sở dữ liệu (`has_grounding = false`).
+- [x] **2.3. Đấu nối thực tế vào ChatPageSection (Trang /chat chuyên sâu):**
+  - [x] Kết nối toàn diện giao diện `/chat` với API backend AI Agent thông qua `sendChatMessage`.
+  - [x] Hiển thị phân tích nội bộ (Analysis metadata) và nguồn luật đã đối chiếu.
+  - [x] Thêm nút thao tác nhanh: Sao chép câu trả lời, Đặt lịch tư vấn từ câu trả lời này kèm dữ liệu trích đoạn.
 
 ---
 
@@ -145,4 +145,5 @@ Hệ thống AI Trợ lý Pháp lý phục vụ trực tiếp cho **khách hàng
 | :--- | :--- | :--- | :--- |
 | **2026-10-14** | Giai đoạn 0 | Tạo nhánh `feature/ai_agent_customer`. Đồng bộ tên "Công ty Luật Hợp danh Nghiệp Hưng" toàn hệ thống. Sửa lỗi CI lint. Tích hợp Gemini 3.5 Flash-lite. Khởi tạo tài liệu kế hoạch chi tiết. | Pair Programming |
 | **2026-10-14** | Giai đoạn 1 | Mở rộng kho RAG sang **5 lĩnh vực pháp luật** (Đất đai 2024, Dân sự 2015, Hôn nhân 2014, Doanh nghiệp 2020, Lao động 2019) với 36 chunks. Cập nhật vector embeddings cache. Nâng cấp nhận diện ý định `consultation_booking` & tối ưu Persona phản hồi 4 phần. | Pair Programming |
-| *Tiếp theo* | Giai đoạn 2 | Xây dựng Next.js Route Handler `/api/agent/chat` và đấu nối thực tế Widget nổi + Trang `/chat` vào API thật. | Pair Programming |
+| **2026-10-14** | Giai đoạn 2 | Xây dựng Route Handler `/api/agent/chat` (BFF proxy), định nghĩa kiểu dữ liệu `chat.ts`, dịch vụ `chat-service.ts`, đấu nối thực tế `ChatbotWidget` và `ChatPageSection` với xử lý lỗi & fallback. | Pair Programming |
+| *Tiếp theo* | Giai đoạn 3 | Triển khai cầu nối Đặt lịch 1-Click (`/consultation`), Quản lý phiên làm việc & Lưu trữ lịch sử `localStorage`, Xuất biên bản tư vấn sơ bộ. | Pair Programming |

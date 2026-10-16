@@ -1,10 +1,12 @@
-import io
 import sys
 from pathlib import Path
 
 # Đảm bảo in tiếng Việt chuẩn trên console Windows
-if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 # Thêm ai_agent vào sys.path
 project_root = Path(__file__).resolve().parent.parent

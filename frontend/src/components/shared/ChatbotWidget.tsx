@@ -18,10 +18,9 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
-import {
-  type ChatMessage,
-  generateBotResponse,
-} from "@/lib/chatbot-data";
+import type { ChatMessage } from "@/types/chat";
+import { generateBotResponse } from "@/lib/chatbot-data";
+import { sendChatMessage } from "@/services/chat-service";
 
 function createMessageId(prefix: string): string {
   return `${prefix}-${Date.now()}`;
@@ -87,7 +86,7 @@ export function ChatbotWidget() {
     }
   }, [isOpen]);
 
-  function handleSend(textToSend?: string) {
+  async function handleSend(textToSend?: string) {
     const query = (textToSend || input).trim();
     if (!query || isTyping) return;
 
@@ -102,22 +101,51 @@ export function ChatbotWidget() {
     setInput("");
     setIsTyping(true);
 
-    // Simulate smart thinking & legal lookup delay
-    setTimeout(() => {
-      const response = generateBotResponse(query);
+    try {
+      const data = await sendChatMessage(query);
       const botMessage: ChatMessage = {
         id: createMessageId("bot"),
         sender: "bot",
-        text: response.text,
+        text: data.response,
         timestamp: getCurrentTimeString(),
-        citations: response.citations,
-        suggestions: response.suggestions,
-        action: response.action,
+        citations: data.citations && data.citations.length > 0 ? data.citations : undefined,
+        action:
+          data.action ??
+          (!data.has_grounding
+            ? {
+                label: "Đặt lịch tư vấn với Luật sư",
+                href: `/consultation?notes=${encodeURIComponent(query)}`,
+              }
+            : null),
+        has_grounding: data.has_grounding,
+        analysis: data.analysis,
+        intent: data.intent,
       };
 
       setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error("Lỗi gửi câu hỏi chatbot widget:", error);
+      const fallback = generateBotResponse(query);
+      const botMessage: ChatMessage = {
+        id: createMessageId("bot-fallback"),
+        sender: "bot",
+        text:
+          fallback.text ||
+          "Hệ thống Trợ lý Pháp lý AI hiện đang bận hoặc gián đoạn kết nối. Quý khách vui lòng thử lại sau giây lát hoặc liên hệ hotline 1900 1234 để được luật sư hỗ trợ trực tiếp.",
+        timestamp: getCurrentTimeString(),
+        citations: fallback.citations,
+        suggestions: fallback.suggestions,
+        action: fallback.action || {
+          label: "Đặt lịch tư vấn với Luật sư",
+          href: `/consultation?notes=${encodeURIComponent(query)}`,
+        },
+        has_grounding: false,
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1100);
+    }
   }
 
   function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
@@ -329,6 +357,14 @@ export function ChatbotWidget() {
                           </li>
                         ))}
                       </ul>
+                    </div>
+                  )}
+
+                  {/* Grounding notice if question needs lawyer review */}
+                  {msg.sender === "bot" && msg.has_grounding === false && msg.id !== "welcome-1" && (
+                    <div className="mt-2 rounded-lg bg-amber-500/10 p-2 text-[11px] text-amber-900 border border-amber-500/20">
+                      <p className="font-semibold text-amber-800">⚠️ Lưu ý tư vấn:</p>
+                      <p>Vụ việc này cần thẩm định thêm hồ sơ chứng cứ. Quý khách nên tham khảo ý kiến trực tiếp của luật sư.</p>
                     </div>
                   )}
 
