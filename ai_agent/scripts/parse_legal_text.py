@@ -175,6 +175,9 @@ def convert(slug: str, domain: str | None, status_override: str | None) -> None:
                f"{authority_slug(meta['loai_van_ban'])}:{promulgated.year}:{slug}")
 
     preamble_lines, parsed, info = parse_body(lines)
+    if not any(ch["articles"] or ch["sections"] for ch in parsed):
+        print(f"✗ {number}: không tìm thấy Điều nào (file .txt {len(lines)} dòng), bỏ qua, không ghi file")
+        return
     chapters_out, chunks = [], []
     n_articles = 0
     numbers_found: list[int] = []

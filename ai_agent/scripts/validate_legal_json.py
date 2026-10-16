@@ -22,13 +22,13 @@ def validate_legal_files():
         / "processed"
         / "legal_corpus"
         / "corporate"
-        / "vn_luat_doanh_nghiep_59_2020_qh14.json"
+        / "hf_59-2020-qh14.json"
     )
     chunks_file = (
         data_dir
         / "embeddings"
         / "corporate"
-        / "vn_luat_doanh_nghiep_59_2020_qh14_chunks.json"
+        / "hf_59-2020-qh14_chunks.json"
     )
 
     print("=== KIỂM TRA CHUẨN DỮ LIỆU PHÁP LUẬT DOANH NGHIỆP ===")
