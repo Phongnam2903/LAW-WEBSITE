@@ -106,7 +106,7 @@ class LegalRAGService:
         self.initialized = True
 
     def retrieve(
-        self, query: str, top_k: int = 3, min_similarity: float | None = None
+        self, query: str, top_k: int = 4, min_similarity: float | None = None
     ) -> list[tuple[LegalChunk, float]]:
         """Truy xuất các chunk có độ tương đồng ngữ nghĩa cao nhất với query."""
         if not self.initialized:
@@ -176,7 +176,12 @@ class LegalRAGService:
             "2. Nếu căn cứ pháp lý được cung cấp KHÔNG ĐỦ để trả lời chính xác, bạn BẮT BUỘC phải trả lời: "
             "'Căn cứ vào cơ sở dữ liệu pháp luật hiện có, hệ thống không tìm thấy quy định phù hợp để đưa ra kết luận cho tình huống này. "
             "Quý khách vui lòng kiểm tra lại câu hỏi hoặc đặt lịch hẹn để được luật sư Công ty Luật Hợp danh Nghiệp Hưng tư vấn trực tiếp.'\n"
-            "3. BẮT BUỘC trình bày câu trả lời theo đúng 4 phần sau:\n"
+            "3. NGUYÊN TẮC VIỆN DẪN VÀ ĐÁNH GIÁ PHÁP LÝ CHUẨN XÁC:\n"
+            "   - Viện dẫn đúng Điều: Thủ tục hòa giải tranh chấp đất đai tại UBND cấp xã quy định tại ĐIỀU 235 Luật Đất đai 2024; Thẩm quyền giải quyết tranh chấp đất đai quy định tại ĐIỀU 236 Luật Đất đai 2024. Tuyệt đối không dẫn nhầm thủ tục hòa giải sang Điều 236.\n"
+            "   - Phân biệt bản chất tranh chấp: Tranh chấp xác định ai là người có quyền sử dụng đất thì hòa giải tại UBND cấp xã là thủ tục tiền tố tụng bắt buộc; Tranh chấp giao dịch, hợp đồng, thừa kế, chia tài sản gắn liền với đất thì không bắt buộc hòa giải tại UBND cấp xã, có thể khởi kiện trực tiếp ra Tòa án.\n"
+            "   - Tình huống đất chưa có Sổ đỏ: Đất chưa có Sổ đỏ KHÔNG CÓ NGHĨA là không được khởi kiện Tòa án. Cần phân định: Nếu có một trong các loại giấy tờ tại Điều 137 thì thuộc thẩm quyền giải quyết của Tòa án nhân dân; Nếu vừa không có Sổ đỏ vừa không có giấy tờ Điều 137 thì đương sự được quyền LỰA CHỌN giữa Tòa án nhân dân hoặc UBND có thẩm quyền.\n"
+            "   - Thẩm quyền UBND theo quy định phân cấp mới: Đối với tranh chấp giữa cá nhân, hộ gia đình, cộng đồng dân cư khi chọn con đường hành chính tại UBND, lưu ý cơ chế phân định thẩm quyền chính quyền địa phương hai cấp (áp dụng từ 01/07/2025 theo Nghị định 151/2025/NĐ-CP): thẩm quyền đã được chuyển giao cho Chủ tịch UBND cấp xã giải quyết.\n"
+            "4. BẮT BUỘC trình bày câu trả lời theo đúng 4 phần sau:\n"
             "### 1. Kết luận & Hướng dẫn giải quyết:\n"
             "(Nêu câu trả lời rõ ràng, chính xác, trực diện)\n\n"
             "### 2. Căn cứ điều luật áp dụng:\n"
