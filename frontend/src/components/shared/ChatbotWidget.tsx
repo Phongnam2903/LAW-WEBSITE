@@ -16,6 +16,8 @@ import {
   Scale,
   ShieldCheck,
   ChevronRight,
+  ChevronDown,
+  Quote,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { ChatMessage } from "@/types/chat";
@@ -302,61 +304,90 @@ export function ChatbotWidget() {
                         <Bot className="h-3.5 w-3.5 text-gold-600" />
                         Trợ lý Nghiệp Hưng
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(msg.id, msg.text)}
-                        title="Sao chép nội dung"
-                        className="text-charcoal-600/70 hover:text-charcoal-900 transition-colors"
-                      >
-                        {copiedId === msg.id ? (
-                          <Check className="h-3 w-3 text-emerald-600" />
-                        ) : (
-                          <Copy className="h-3 w-3" />
-                        )}
-                      </button>
+                      <CopyActionButton
+                        text={msg.text}
+                        id={msg.id}
+                        copiedId={copiedId}
+                        onCopy={handleCopy}
+                        size="sm"
+                      />
                     </div>
                   )}
 
-                  {/* Formatted Text */}
-                  <div className="whitespace-pre-wrap leading-relaxed text-[13px]">
-                    {msg.text.split("\n").map((line, idx) => {
-                      if (line.startsWith("• ") || line.startsWith("- ")) {
+                  {/* Formatted Text với Markdown & Legal Quotes */}
+                  <div className="leading-relaxed text-[13px] text-charcoal-900">
+                    {parseMessageBlocks(msg.text).map((block, idx) => {
+                      if (block.type === "h3" || block.type === "section_title") {
+                        return (
+                          <div key={idx} className="mt-2.5 mb-1 font-bold text-navy-900 text-[13px]">
+                            {renderFormattedText(block.text || "")}
+                          </div>
+                        );
+                      }
+                      if (block.type === "quote") {
+                        return (
+                          <div
+                            key={idx}
+                            className="my-2 rounded-lg border-l-3 border-gold-600 bg-neutral-50 p-2.5 text-xs text-charcoal-800"
+                          >
+                            <div className="flex items-start gap-1.5">
+                              <Quote className="h-3.5 w-3.5 shrink-0 text-gold-600 mt-0.5 opacity-80" />
+                              <div className="space-y-1 font-serif italic leading-relaxed">
+                                {block.lines?.map((qLine, qIdx) => (
+                                  <p key={qIdx}>{renderFormattedText(qLine)}</p>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      if (block.type === "bullet") {
                         return (
                           <div key={idx} className="my-0.5 flex items-start gap-1.5 pl-1">
-                            <span className="text-gold-600 font-bold">•</span>
-                            <span>{renderFormattedText(line.substring(2))}</span>
+                            <span className="text-gold-600 font-bold text-xs mt-0.5">•</span>
+                            <span className="leading-relaxed">{renderFormattedText(block.text || "")}</span>
                           </div>
                         );
                       }
-                      if (/^\d+\.\s/.test(line)) {
-                        return (
-                          <div key={idx} className="my-1 font-semibold text-charcoal-900">
-                            {renderFormattedText(line)}
-                          </div>
-                        );
+                      if (block.type === "space") {
+                        return <div key={idx} className="h-1.5" />;
                       }
                       return (
-                        <p key={idx} className="my-1">
-                          {renderFormattedText(line)}
+                        <p key={idx} className="my-1 leading-relaxed">
+                          {renderFormattedText(block.text || "")}
                         </p>
                       );
                     })}
                   </div>
 
-                  {/* Citations list if any */}
+                  {/* Citations list gọn gàng, thu gọn */}
                   {msg.citations && msg.citations.length > 0 && (
-                    <div className="mt-2.5 rounded-lg bg-neutral-100 p-2 text-[11px] text-charcoal-600 border border-neutral-200/60">
-                      <p className="font-semibold text-navy-900 mb-1 flex items-center gap-1">
-                        <Scale className="h-3 w-3 text-gold-600" />
-                        Căn cứ pháp lý:
-                      </p>
-                      <ul className="list-disc list-inside space-y-0.5">
-                        {msg.citations.map((c, i) => (
-                          <li key={i} className="text-charcoal-900">
-                            {c}
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="mt-2.5 border-t border-neutral-100 pt-2">
+                      <details className="group rounded-lg bg-neutral-50 p-2 text-[11px] text-charcoal-600 border border-neutral-200/70">
+                        <summary className="flex cursor-pointer items-center justify-between font-semibold text-navy-900 select-none list-none">
+                          <span className="flex items-center gap-1.5">
+                            <Scale className="h-3 w-3 text-gold-600" />
+                            <span>Căn cứ pháp lý đối chiếu ({msg.citations.length})</span>
+                          </span>
+                          <ChevronDown className="h-3 w-3 text-neutral-400 transition-transform duration-200 group-open:rotate-180" />
+                        </summary>
+                        <ul className="mt-2 space-y-1.5 border-t border-neutral-200/60 pt-1.5">
+                          {msg.citations.map((c, i) => {
+                            const { docName, article } = formatCitationBreadcrumb(c);
+                            return (
+                              <li key={i} className="flex items-start gap-1.5 text-charcoal-800 leading-normal">
+                                <span className="mt-1 h-1 w-1 rounded-full bg-gold-600 shrink-0" />
+                                <div>
+                                  <span className="font-semibold text-navy-900">{docName}</span>
+                                  {article && (
+                                    <span className="text-charcoal-600 block text-[10px]">{article}</span>
+                                  )}
+                                </div>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </details>
                     </div>
                   )}
 
@@ -502,4 +533,116 @@ function renderFormattedText(text: string) {
     }
     return part;
   });
+}
+
+function formatCitationBreadcrumb(raw: string): { docName: string; article: string } {
+  if (!raw.includes(" > ")) {
+    return { docName: raw, article: "" };
+  }
+  const parts = raw.split(" > ").map((p) => p.trim()).filter(Boolean);
+  const docName = parts[0] || raw;
+  const article = parts.length > 1 ? parts[parts.length - 1] : "";
+  return { docName, article };
+}
+
+interface ParsedBlock {
+  type: "h1" | "h2" | "h3" | "section_title" | "bullet" | "quote" | "space" | "paragraph";
+  text?: string;
+  lines?: string[];
+}
+
+function parseMessageBlocks(rawText: string): ParsedBlock[] {
+  const lines = rawText.split("\n");
+  const blocks: ParsedBlock[] = [];
+  let currentQuoteLines: string[] = [];
+
+  const flushQuote = () => {
+    if (currentQuoteLines.length > 0) {
+      blocks.push({ type: "quote", lines: [...currentQuoteLines] });
+      currentQuoteLines = [];
+    }
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    // Dòng trích dẫn blockquote bắt đầu bằng >
+    if (line.startsWith(">")) {
+      const cleanQuoteLine = line.replace(/^>+\s*/, "").trim();
+      if (cleanQuoteLine) {
+        currentQuoteLines.push(cleanQuoteLine);
+      }
+      continue;
+    }
+
+    flushQuote();
+
+    if (!line) {
+      blocks.push({ type: "space" });
+      continue;
+    }
+
+    if (line.startsWith("### ")) {
+      blocks.push({ type: "h3", text: line.substring(4).trim() });
+    } else if (line.startsWith("## ")) {
+      blocks.push({ type: "h2", text: line.substring(3).trim() });
+    } else if (line.startsWith("# ")) {
+      blocks.push({ type: "h1", text: line.substring(2).trim() });
+    } else if (line.startsWith("• ") || line.startsWith("- ") || line.startsWith("* ")) {
+      blocks.push({ type: "bullet", text: line.replace(/^[•\-*]\s*/, "").trim() });
+    } else if (/^\d+\.\s/.test(line)) {
+      blocks.push({ type: "section_title", text: line });
+    } else {
+      blocks.push({ type: "paragraph", text: line });
+    }
+  }
+
+  flushQuote();
+  return blocks;
+}
+
+function CopyActionButton({
+  text,
+  id,
+  copiedId,
+  onCopy,
+  size = "md",
+}: {
+  text: string;
+  id: string;
+  copiedId: string | null;
+  onCopy: (id: string, text: string) => void;
+  size?: "sm" | "md";
+}) {
+  const isCopied = copiedId === id;
+  const isSm = size === "sm";
+
+  return (
+    <div className="relative group/copy inline-flex items-center">
+      <button
+        type="button"
+        onClick={() => onCopy(id, text)}
+        aria-label="Sao chép nội dung"
+        className={cn(
+          "inline-flex items-center justify-center transition-all focus:outline-hidden",
+          isSm
+            ? "h-6 w-6 rounded-md text-charcoal-600/70 hover:bg-neutral-100 hover:text-navy-900"
+            : "h-7.5 w-7.5 rounded-full border border-neutral-300 bg-white text-charcoal-600 hover:bg-neutral-50 hover:text-navy-900 shadow-2xs",
+          isCopied && "text-emerald-600 hover:text-emerald-700 border-emerald-200 bg-emerald-50/50"
+        )}
+      >
+        {isCopied ? (
+          <Check className={cn(isSm ? "h-3 w-3" : "h-3.5 w-3.5", "text-emerald-600 transition-transform scale-110")} />
+        ) : (
+          <Copy className={cn(isSm ? "h-3 w-3" : "h-3.5 w-3.5", "transition-transform group-hover/copy:scale-105")} />
+        )}
+      </button>
+
+      {/* Floating Tooltip kiểu ChatGPT / Claude */}
+      <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white opacity-0 shadow-md transition-all duration-150 group-hover/copy:opacity-100 group-hover/copy:-translate-y-0.5 z-30">
+        {isCopied ? "Đã sao chép!" : "Sao chép"}
+        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
+      </span>
+    </div>
+  );
 }

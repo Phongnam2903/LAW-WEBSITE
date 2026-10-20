@@ -13,9 +13,11 @@ import {
   Scale,
   ShieldCheck,
   ChevronRight,
+  ChevronDown,
   ArrowLeft,
   Plus,
   MessageSquare,
+  Quote,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { ChatMessage } from "@/types/chat";
@@ -434,101 +436,123 @@ export function ChatPageSection() {
                           <Sparkles className="h-3.5 w-3.5 text-[#0F2942]" />
                           Trợ lý Pháp lý AI Nghiệp Hưng
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => handleCopy(msg.id, msg.text)}
-                          title="Sao chép câu trả lời"
-                          className="flex items-center gap-1 text-[11px] text-slate-500 hover:text-[#0F2942] transition-colors"
-                        >
-                          {copiedId === msg.id ? (
-                            <>
-                              <Check className="h-3.5 w-3.5 text-emerald-600" />
-                              <span className="text-emerald-600 font-medium">Đã chép</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="h-3.5 w-3.5 text-slate-400" />
-                              <span>Sao chép</span>
-                            </>
-                          )}
-                        </button>
+                        <CopyActionButton
+                          text={msg.text}
+                          id={msg.id}
+                          copiedId={copiedId}
+                          onCopy={handleCopy}
+                          size="sm"
+                        />
                       </div>
 
-                      {/* Content: Màu chữ nội dung AI #1F2937 */}
-                      <div className="whitespace-pre-wrap leading-relaxed text-sm text-[#1F2937]">
-                        {msg.text.split("\n").map((line, idx) => {
-                          if (line.startsWith("### ")) {
+                      {/* Content: Màu chữ nội dung AI #1F2937 với định dạng Markdown & Legal Quotes */}
+                      <div className="leading-relaxed text-sm text-[#1F2937]">
+                        {parseMessageBlocks(msg.text).map((block, idx) => {
+                          if (block.type === "h3") {
                             return (
-                              <h3 key={idx} className="mt-3.5 mb-1.5 font-bold text-sm md:text-base text-[#0F2942]">
-                                {renderFormattedText(line.substring(4))}
+                              <h3 key={idx} className="mt-4 mb-2 font-bold text-sm md:text-base text-[#0F2942]">
+                                {renderFormattedText(block.text || "")}
                               </h3>
                             );
                           }
-                          if (line.startsWith("## ")) {
+                          if (block.type === "h2") {
                             return (
                               <h2 key={idx} className="mt-4 mb-2 font-bold text-base md:text-lg text-[#0F2942]">
-                                {renderFormattedText(line.substring(3))}
+                                {renderFormattedText(block.text || "")}
                               </h2>
                             );
                           }
-                          if (line.startsWith("# ")) {
+                          if (block.type === "h1") {
                             return (
                               <h1 key={idx} className="mt-4 mb-2 font-bold text-lg md:text-xl text-[#0F2942]">
-                                {renderFormattedText(line.substring(2))}
+                                {renderFormattedText(block.text || "")}
                               </h1>
                             );
                           }
-                          if (line.startsWith("• ") || line.startsWith("- ")) {
+                          if (block.type === "section_title") {
+                            return (
+                              <div key={idx} className="mt-3.5 mb-1.5 font-bold text-sm md:text-base text-[#0F2942]">
+                                {renderFormattedText(block.text || "")}
+                              </div>
+                            );
+                          }
+                          if (block.type === "quote") {
+                            return (
+                              <div
+                                key={idx}
+                                className="my-3 rounded-xl border-l-4 border-[#C59B27] bg-[#F8FAFC] p-3.5 md:p-4 text-xs md:text-sm text-slate-800 shadow-2xs"
+                              >
+                                <div className="flex items-start gap-2.5">
+                                  <Quote className="h-4 w-4 shrink-0 text-[#C59B27] mt-0.5 opacity-80" />
+                                  <div className="space-y-1.5 font-serif italic text-[#1F2937] leading-relaxed">
+                                    {block.lines?.map((qLine, qIdx) => (
+                                      <p key={qIdx}>{renderFormattedText(qLine)}</p>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          }
+                          if (block.type === "bullet") {
                             return (
                               <div key={idx} className="my-1 flex items-start gap-2 pl-1">
-                                <span className="text-[#C59B27] font-bold">•</span>
-                                <span className="text-[#1F2937]">{renderFormattedText(line.substring(2))}</span>
+                                <span className="text-[#C59B27] font-bold text-xs mt-0.5">•</span>
+                                <span className="text-[#1F2937] leading-relaxed">
+                                  {renderFormattedText(block.text || "")}
+                                </span>
                               </div>
                             );
                           }
-                          if (/^\d+\.\s/.test(line)) {
-                            return (
-                              <div key={idx} className="mt-2.5 mb-1 font-semibold text-[#0F2942]">
-                                {renderFormattedText(line)}
-                              </div>
-                            );
-                          }
-                          if (!line.trim()) {
+                          if (block.type === "space") {
                             return <div key={idx} className="h-2" />;
                           }
                           return (
-                            <p key={idx} className="my-1.5">
-                              {renderFormattedText(line)}
+                            <p key={idx} className="my-1.5 leading-relaxed">
+                              {renderFormattedText(block.text || "")}
                             </p>
                           );
                         })}
                       </div>
 
-                      {/* Card trích dẫn pháp luật riêng với nền #F8FAFC, border #E2E8F0 */}
+                      {/* Căn cứ pháp lý đối chiếu (Collapsible accordion tinh tế, sạch sẽ, bỏ mũi tên > thừa) */}
                       {msg.citations && msg.citations.length > 0 && (
-                        <div className="mt-4 rounded-xl bg-[#F8FAFC] p-3.5 text-xs text-slate-700 border border-[#E2E8F0] shadow-2xs">
-                          <p className="font-semibold text-[#0F2942] mb-1.5 flex items-center gap-1.5">
-                            <Scale className="h-3.5 w-3.5 text-[#C59B27]" />
-                            Căn cứ pháp lý viện dẫn:
-                          </p>
-                          <ul className="list-disc list-inside space-y-1.5">
-                            {msg.citations.map((c, i) => (
-                              <li key={i} className="text-[#1F2937] leading-relaxed">
-                                {renderCitationText(c)}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {/* Analysis Box */}
-                      {msg.analysis && (
-                        <div className="mt-3 rounded-xl bg-[#C59B27]/10 p-3 text-xs text-slate-700 border border-[#C59B27]/30">
-                          <p className="font-semibold text-[#0F2942] mb-1 flex items-center gap-1.5">
-                            <Sparkles className="h-3.5 w-3.5 text-[#0F2942]" />
-                            Phân tích hệ thống AI & Phạm vi tra cứu:
-                          </p>
-                          <p className="text-[12px] text-slate-700 leading-relaxed italic">{msg.analysis}</p>
+                        <div className="mt-3.5 border-t border-slate-100 pt-2.5">
+                          <details className="group rounded-xl border border-slate-200/90 bg-[#F8FAFC] p-3 text-xs transition-colors hover:border-slate-300">
+                            <summary className="flex cursor-pointer items-center justify-between font-semibold text-[#0F2942] select-none list-none">
+                              <span className="flex items-center gap-2">
+                                <Scale className="h-3.5 w-3.5 text-[#C59B27]" />
+                                <span>Căn cứ pháp lý đối chiếu ({msg.citations.length} nguồn văn bản)</span>
+                              </span>
+                              <span className="flex items-center gap-1.5 text-[11px] text-slate-500 font-normal">
+                                <span>Chi tiết</span>
+                                <ChevronDown className="h-3.5 w-3.5 text-slate-400 transition-transform duration-200 group-open:rotate-180" />
+                              </span>
+                            </summary>
+                            <ul className="mt-2.5 space-y-2 border-t border-slate-200/70 pt-2.5">
+                              {msg.citations.map((c, i) => {
+                                const { docName, article } = formatCitationBreadcrumb(c);
+                                return (
+                                  <li key={i} className="flex items-start gap-2 text-slate-700 leading-relaxed">
+                                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#C59B27] shrink-0" />
+                                    <div>
+                                      <span className="font-semibold text-[#0F2942]">{docName}</span>
+                                      {article && (
+                                        <span className="text-slate-600 block text-[11px] mt-0.5">{article}</span>
+                                      )}
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                            {msg.analysis && (
+                              <div className="mt-2.5 pt-2 border-t border-slate-200/50 flex items-center justify-between text-[11px] text-slate-500 italic">
+                                <span className="flex items-center gap-1.5">
+                                  <Sparkles className="h-3 w-3 text-[#C59B27]" />
+                                  {msg.analysis}
+                                </span>
+                              </div>
+                            )}
+                          </details>
                         </div>
                       )}
 
@@ -554,23 +578,13 @@ export function ChatPageSection() {
                             <ChevronRight className="h-3.5 w-3.5 text-white/80" />
                           </Link>
 
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(msg.id, msg.text)}
-                            className="inline-flex items-center gap-1.5 rounded-pill border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-                          >
-                            {copiedId === msg.id ? (
-                              <>
-                                <Check className="h-3.5 w-3.5 text-emerald-600" />
-                                <span className="text-emerald-600 font-semibold">Đã sao chép</span>
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="h-3.5 w-3.5 text-slate-500" />
-                                <span>Sao chép câu trả lời</span>
-                              </>
-                            )}
-                          </button>
+                          <CopyActionButton
+                            text={msg.text}
+                            id={msg.id}
+                            copiedId={copiedId}
+                            onCopy={handleCopy}
+                            size="md"
+                          />
                         </div>
                       )}
                     </div>
@@ -762,4 +776,117 @@ function renderCitationText(text: string) {
     return parts;
   }
   return renderFormattedText(text);
+}
+
+function formatCitationBreadcrumb(raw: string): { docName: string; article: string } {
+  if (!raw.includes(" > ")) {
+    return { docName: raw, article: "" };
+  }
+  const parts = raw.split(" > ").map((p) => p.trim()).filter(Boolean);
+  const docName = parts[0] || raw;
+  const article = parts.length > 1 ? parts[parts.length - 1] : "";
+  return { docName, article };
+}
+
+interface ParsedBlock {
+  type: "h1" | "h2" | "h3" | "section_title" | "bullet" | "quote" | "space" | "paragraph";
+  text?: string;
+  lines?: string[];
+}
+
+function parseMessageBlocks(rawText: string): ParsedBlock[] {
+  const lines = rawText.split("\n");
+  const blocks: ParsedBlock[] = [];
+  let currentQuoteLines: string[] = [];
+
+  const flushQuote = () => {
+    if (currentQuoteLines.length > 0) {
+      blocks.push({ type: "quote", lines: [...currentQuoteLines] });
+      currentQuoteLines = [];
+    }
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    // Dòng trích dẫn blockquote bắt đầu bằng >
+    if (line.startsWith(">")) {
+      const cleanQuoteLine = line.replace(/^>+\s*/, "").trim();
+      if (cleanQuoteLine) {
+        currentQuoteLines.push(cleanQuoteLine);
+      }
+      continue;
+    }
+
+    // Flush quote nếu gặp dòng bình thường
+    flushQuote();
+
+    if (!line) {
+      blocks.push({ type: "space" });
+      continue;
+    }
+
+    if (line.startsWith("### ")) {
+      blocks.push({ type: "h3", text: line.substring(4).trim() });
+    } else if (line.startsWith("## ")) {
+      blocks.push({ type: "h2", text: line.substring(3).trim() });
+    } else if (line.startsWith("# ")) {
+      blocks.push({ type: "h1", text: line.substring(2).trim() });
+    } else if (line.startsWith("• ") || line.startsWith("- ") || line.startsWith("* ")) {
+      blocks.push({ type: "bullet", text: line.replace(/^[•\-*]\s*/, "").trim() });
+    } else if (/^\d+\.\s/.test(line)) {
+      blocks.push({ type: "section_title", text: line });
+    } else {
+      blocks.push({ type: "paragraph", text: line });
+    }
+  }
+
+  flushQuote();
+  return blocks;
+}
+
+function CopyActionButton({
+  text,
+  id,
+  copiedId,
+  onCopy,
+  size = "md",
+}: {
+  text: string;
+  id: string;
+  copiedId: string | null;
+  onCopy: (id: string, text: string) => void;
+  size?: "sm" | "md";
+}) {
+  const isCopied = copiedId === id;
+  const isSm = size === "sm";
+
+  return (
+    <div className="relative group/copy inline-flex items-center">
+      <button
+        type="button"
+        onClick={() => onCopy(id, text)}
+        aria-label="Sao chép nội dung"
+        className={cn(
+          "inline-flex items-center justify-center transition-all focus:outline-hidden",
+          isSm
+            ? "h-7 w-7 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-[#0F2942]"
+            : "h-8.5 w-8.5 rounded-full border border-slate-200/90 bg-white text-slate-500 hover:bg-slate-50 hover:text-[#0F2942] hover:border-slate-300 shadow-2xs",
+          isCopied && "text-emerald-600 hover:text-emerald-700 border-emerald-200 bg-emerald-50/50"
+        )}
+      >
+        {isCopied ? (
+          <Check className={cn(isSm ? "h-3.5 w-3.5" : "h-4 w-4", "text-emerald-600 transition-transform scale-110")} />
+        ) : (
+          <Copy className={cn(isSm ? "h-3.5 w-3.5" : "h-4 w-4", "transition-transform group-hover/copy:scale-105")} />
+        )}
+      </button>
+
+      {/* Floating Tooltip kiểu ChatGPT / Claude */}
+      <span className="pointer-events-none absolute -top-8.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-[11px] font-medium text-white opacity-0 shadow-md transition-all duration-150 group-hover/copy:opacity-100 group-hover/copy:-translate-y-0.5 z-30">
+        {isCopied ? "Đã sao chép!" : "Sao chép"}
+        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
+      </span>
+    </div>
+  );
 }

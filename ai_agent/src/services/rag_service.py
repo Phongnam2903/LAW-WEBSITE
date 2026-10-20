@@ -1,6 +1,7 @@
 import json
 import math
 from pathlib import Path
+import re
 from typing import Any
 
 import httpx
@@ -44,17 +45,55 @@ class LegalRAGService:
         self.initialized = False
 
     def get_embedding(self, text: str) -> list[float]:
-        """Tạo vector embedding cho văn bản qua Ollama API."""
-        url = f"{self.ollama_base_url}/api/embeddings"
-        payload = {"model": self.embed_model, "prompt": text}
+        """Tạo vector embedding cho văn bản qua Ollama API (hỗ trợ tự động truncate tránh tràn context)."""
+        # Thử endpoint hiện đại /api/embed trước (hỗ trợ tự truncate nếu vượt context 2048)
+        embed_url = f"{self.ollama_base_url}/api/embed"
         try:
-            with httpx.Client(timeout=30.0) as client:
+            with httpx.Client(timeout=60.0) as client:
+                resp = client.post(
+                    embed_url,
+                    json={"model": self.embed_model, "input": text, "truncate": True},
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    embeddings = data.get("embeddings", [])
+                    if embeddings:
+                        return embeddings[0]
+        except Exception:
+            pass
+
+        # Fallback về /api/embeddings cũ
+        url = f"{self.ollama_base_url}/api/embeddings"
+        safe_text = text[:6000] if len(text) > 6000 else text
+        payload = {"model": self.embed_model, "prompt": safe_text}
+        try:
+            with httpx.Client(timeout=60.0) as client:
                 resp = client.post(url, json=payload)
                 resp.raise_for_status()
                 data = resp.json()
                 return data["embedding"]
         except Exception as e:
             raise RuntimeError(f"Lỗi khi gọi embedding từ Ollama ({self.embed_model}): {e}")
+
+    def get_embeddings_batch(self, texts: list[str]) -> list[list[float]]:
+        """Tạo vector embeddings cho một danh sách văn bản theo batch qua Ollama API."""
+        embed_url = f"{self.ollama_base_url}/api/embed"
+        try:
+            with httpx.Client(timeout=120.0) as client:
+                resp = client.post(
+                    embed_url,
+                    json={"model": self.embed_model, "input": texts, "truncate": True},
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    embeddings = data.get("embeddings", [])
+                    if len(embeddings) == len(texts):
+                        return embeddings
+        except Exception:
+            pass
+
+        # Fallback tuần tự từng text nếu batch thất bại
+        return [self.get_embedding(t) for t in texts]
 
     @staticmethod
     def cosine_similarity(v1: list[float], v2: list[float]) -> float:
@@ -66,15 +105,15 @@ class LegalRAGService:
             return 0.0
         return dot / (norm1 * norm2)
 
-    def initialize_index(self, force_reindex: bool = False):
-        """Khởi tạo hoặc tải index vector từ cache."""
+    def initialize_index(self, force_reindex: bool = False, batch_size: int = 20):
+        """Khởi tạo hoặc tải index vector từ cache, hỗ trợ batching, checkpointing và log tiến độ."""
         all_chunks = self.corpus_service.load_all_chunks()
         if not all_chunks:
             print("Cảnh báo: Không tìm thấy chunks nào để index.")
             self.initialized = True
             return
 
-        cached_vectors = {}
+        cached_vectors: dict[str, list[float]] = {}
         if self.vector_cache_path.exists() and not force_reindex:
             try:
                 with open(self.vector_cache_path, encoding="utf-8") as f:
@@ -82,46 +121,103 @@ class LegalRAGService:
             except Exception as e:
                 print(f"Lỗi đọc vector cache: {e}")
 
-        # Cập nhật các chunks chưa có trong cache
-        updated = False
-        self.vector_index = {}
+        # Lọc ra các chunks chưa có trong cache
+        pending_chunks = [c for c in all_chunks if c.chunk_id not in cached_vectors]
+        total_chunks = len(all_chunks)
+        already_cached = total_chunks - len(pending_chunks)
 
+        if already_cached > 0:
+            print(f"[OK] Da nap san {already_cached}/{total_chunks} chunks tu cache.", flush=True)
+
+        if pending_chunks:
+            print(f"[*] Dang vector hoa {len(pending_chunks)} chunks con thieu (Batch size: {batch_size})...", flush=True)
+            total_batches = (len(pending_chunks) + batch_size - 1) // batch_size
+
+            for batch_idx in range(total_batches):
+                start_i = batch_idx * batch_size
+                end_i = min(start_i + batch_size, len(pending_chunks))
+                batch = pending_chunks[start_i:end_i]
+                batch_texts = [f"{c.breadcrumbs}\n{c.content}" for c in batch]
+
+                try:
+                    embeddings = self.get_embeddings_batch(batch_texts)
+                    for chunk, vec in zip(batch, embeddings):
+                        cached_vectors[chunk.chunk_id] = vec
+                except Exception as e:
+                    print(f"  [!] Loi batch {batch_idx + 1}: {e}. Dang thu fallback tung chunk...", flush=True)
+                    for chunk in batch:
+                        embed_text = f"{chunk.breadcrumbs}\n{chunk.content}"
+                        cached_vectors[chunk.chunk_id] = self.get_embedding(embed_text)
+
+                # Checkpoint lưu ngay vào đĩa sau mỗi batch
+                with open(self.vector_cache_path, "w", encoding="utf-8") as f:
+                    json.dump(cached_vectors, f)
+
+                done_count = already_cached + end_i
+                pct = (done_count / total_chunks) * 100
+                print(f"  -> Tien do: [{done_count}/{total_chunks}] ({pct:.1f}%) - Da luu checkpoint.", flush=True)
+
+        self.vector_index = {}
         for chunk in all_chunks:
             cid = chunk.chunk_id
             if cid in cached_vectors:
-                vec = cached_vectors[cid]
-            else:
-                # Tạo embedding mới từ nội dung kèm breadcrumbs
-                embed_text = f"{chunk.breadcrumbs}\n{chunk.content}"
-                vec = self.get_embedding(embed_text)
-                cached_vectors[cid] = vec
-                updated = True
-
-            self.vector_index[cid] = {"vector": vec, "chunk": chunk}
-
-        if updated:
-            with open(self.vector_cache_path, "w", encoding="utf-8") as f:
-                json.dump(cached_vectors, f)
+                self.vector_index[cid] = {"vector": cached_vectors[cid], "chunk": chunk}
 
         self.initialized = True
 
     def retrieve(
         self, query: str, top_k: int = 4, min_similarity: float | None = None
     ) -> list[tuple[LegalChunk, float]]:
-        """Truy xuất các chunk có độ tương đồng ngữ nghĩa cao nhất với query."""
+        """Truy xuất các chunk pháp luật bằng Hybrid Search (Vector + Lexical / Citation Boosting)."""
         if not self.initialized:
             self.initialize_index()
 
         threshold = min_similarity if min_similarity is not None else self.similarity_threshold
         query_vec = self.get_embedding(query)
 
+        # Trích xuất số Điều nếu có trong câu hỏi (vd: "Điều 35", "dieu 35")
+        art_match = re.search(r"điều\s+(\d+)", query, re.IGNORECASE)
+        target_art = int(art_match.group(1)) if art_match else None
+
+        q_lower = query.lower()
+        q_tokens = set(re.findall(r"\w+", q_lower))
+
         scored: list[tuple[LegalChunk, float]] = []
         for item in self.vector_index.values():
+            chunk: LegalChunk = item["chunk"]
             sim = self.cosine_similarity(query_vec, item["vector"])
-            if sim >= threshold:
-                scored.append((item["chunk"], sim))
+            if sim < threshold:
+                continue
 
-        # Sắp xếp theo độ tương đồng giảm dần
+            # Tính điểm Lexical / Hybrid Boost
+            boost = 0.0
+
+            # 1. Trùng khớp chính xác số Điều
+            if target_art and chunk.article_number == target_art:
+                boost += 0.15
+
+            # 2. Trùng khớp văn bản luật được nêu tên rõ ràng trong câu hỏi
+            b_lower = chunk.breadcrumbs.lower()
+            if "lao động" in q_lower and ("bộ luật lao động" in b_lower or "45/2019/qh14" in chunk.chunk_id.lower()):
+                boost += 0.12
+            elif "đất đai" in q_lower and "đất đai" in b_lower:
+                boost += 0.12
+            elif "dân sự" in q_lower and "dân sự" in b_lower:
+                boost += 0.12
+            elif "doanh nghiệp" in q_lower and "doanh nghiệp" in b_lower:
+                boost += 0.12
+            elif "hôn nhân" in q_lower and "hôn nhân" in b_lower:
+                boost += 0.12
+
+            # 3. Mức độ trùng khớp từ khóa (Token overlap)
+            c_tokens = set(re.findall(r"\w+", chunk.content.lower()))
+            overlap = len(q_tokens.intersection(c_tokens)) / max(len(q_tokens), 1)
+            token_score = overlap * 0.1
+
+            total_score = sim + boost + token_score
+            scored.append((chunk, total_score))
+
+        # Sắp xếp theo điểm tổng hợp giảm dần
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored[:top_k]
 
@@ -187,7 +283,7 @@ class LegalRAGService:
             "### 2. Căn cứ điều luật áp dụng:\n"
             "(Chỉ rõ tên văn bản luật, số hiệu, Điều, Khoản, Điểm liên quan)\n\n"
             "### 3. Đoạn trích dẫn nguyên văn:\n"
-            "(Trích dẫn chính xác nguyên văn quy định từ ngữ trong điều luật)\n\n"
+            "(Trích dẫn chính xác nguyên văn quy định từ ngữ trong điều luật, đặt trong dấu ngoặc kép, tuyệt đối không thêm ký hiệu '>' ở đầu dòng trích dẫn)\n\n"
             "### 4. Khuyến nghị từ Luật Nghiệp Hưng:\n"
             "(Lưu ý rủi ro pháp lý thực tế, các giấy tờ/chứng cứ cần lưu trữ hoặc chuẩn bị, và đề xuất đặt lịch làm việc với luật sư nếu vụ việc phức tạp hoặc có nguy cơ tranh chấp)\n"
         )
